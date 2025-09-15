@@ -1,33 +1,41 @@
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="max-w-7xl mx-auto px-4 min-h-screen">
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <div className="">
+    <div className="flex items-center justify-center min-h-screen px-4 bg-white">
+      <div className="flex gap-6 flex-col-reverse lg:flex-row items-center justify-center max-w-7xl w-full">
+        {/* Image Section */}
+        <div className="flex justify-center">
           <Image
             src="/cv-home.png"
             alt="cv-home-image"
-            width={10000}
-            height={10000}
-            className="max-w-[500px] w-full h-auto"
+            width={500}
+            height={500}
+            className="w-full max-w-sm sm:max-w-[500px] h-auto"
           />
         </div>
 
-        <div className="">
-          <h1 className="font-bold text-[80px] text-main">
-            Create Your <span className="text-primary">AI-Powered Resume</span>
+        {/* Text Section */}
+        <div className="text-center lg:text-left flex-1 space-y-7">
+          <h1 className="font-bold text-4xl sm:text-5xl md:text-6xl lg:text-[80px] text-main leading-[124%]">
+            Create Your <span className="text-prime">AI-Powered Resume</span>
           </h1>
 
-          <p className="font-medium text-main text-2xl">
-            Let our AI technology help you build a professional resume tailored
+          <p className="font-medium text-main text-base sm:text-lg md:text-xl">
+            Let our AI technology help you build a professional resume tailored{" "}
+            <br />
             to your skills, experience, and career goals.
           </p>
 
-          <p className="font-normal text-subtle text-lg">
+          <p className="font-normal text-subtle text-sm sm:text-base md:text-lg">
             Follow these simple steps to create a standout resume that will get
-            you noticed by top employers.
+            you <br /> noticed by top employers.
           </p>
+
+          <Button className="rounded-[6px] bg-prime py-3 px-6 font-medium text-base sm:text-lg">
+            Start Now
+          </Button>
         </div>
       </div>
     </div>
