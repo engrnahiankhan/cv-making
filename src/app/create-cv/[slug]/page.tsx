@@ -77,7 +77,7 @@ const MultiStepForm = () => {
           </div>
         </div>
 
-        <div className="px-[120px]">
+        <div className="px-5 sm:px-[100px]">
           {step === 1 && <PersonalInfo />}
           {step === 2 && <CareerSummary />}
 

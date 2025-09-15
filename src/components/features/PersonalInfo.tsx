@@ -9,9 +9,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
-import { nextStep, updateField } from "@/redux/slices/formSlice";
+import { updateField } from "@/redux/slices/formSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 
 const PersonalInfo = () => {
@@ -24,94 +22,70 @@ const PersonalInfo = () => {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-3">
-        <h1 className="text-4xl font-bold text-gray-900">
+      <div className="space-y-2 sm:space-y-4">
+        <h1 className="text-3xl sm:text-5xl font-semibold text-main">
           Tell Us About Yourself
         </h1>
-        <p className="text-gray-600 text-lg">
+        <p className="text-subtle text-base sm:text-lg font-normal">
           Fill in your personal details so we can tailor your resume perfectly
           to your career goals.
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* First Name and Last Name */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label
-              htmlFor="firstName"
-              className="text-sm font-medium text-gray-900">
-              First Name
-            </Label>
+          <div className="space-y-1">
+            <Label htmlFor="firstName">First Name</Label>
             <Input
               id="firstName"
               value={data.first_name || ""}
               onChange={(e) => handleChange("first_name", e.target.value)}
               placeholder="Saifur"
-              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
             />
           </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="lastName"
-              className="text-sm font-medium text-gray-900">
-              Last Name
-            </Label>
+          <div className="space-y-1">
+            <Label htmlFor="lastName">Last Name</Label>
             <Input
               id="lastName"
               value={data.last_name || ""}
               onChange={(e) => handleChange("last_name", e.target.value)}
               placeholder="Rahman"
-              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
             />
           </div>
         </div>
 
         {/* Phone Number and Email Address */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label
-              htmlFor="phone"
-              className="text-sm font-medium text-gray-900">
-              Phone Number
-            </Label>
+          <div className="space-y-1">
+            <Label htmlFor="phone">Phone Number</Label>
             <Input
               id="phone"
               value={data.phone_number || ""}
               onChange={(e) => handleChange("phone_number", e.target.value)}
               placeholder="+880 1567808747"
-              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
             />
           </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="email"
-              className="text-sm font-medium text-gray-900">
-              Email Address
-            </Label>
+          <div className="space-y-1">
+            <Label htmlFor="email">Email Address</Label>
             <Input
               id="email"
               type="email"
               value={data.email || ""}
               onChange={(e) => handleChange("email", e.target.value)}
               placeholder="ux.saifur.info@gmail.com"
-              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
             />
           </div>
         </div>
 
         {/* Country/Region and Address */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label
-              htmlFor="country"
-              className="text-sm font-medium text-gray-900">
-              Country/Region
-            </Label>
+          <div className="space-y-1">
+            <Label htmlFor="country">Country/Region</Label>
             <Select
               value={data.country || ""}
               onValueChange={(value) => handleChange("country", value)}>
-              <SelectTrigger className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0">
+              <SelectTrigger className="!h-[64px] border-gray-300 focus:border-gray-400 focus:ring-0 w-full">
                 <SelectValue placeholder="Bangladesh" />
               </SelectTrigger>
               <SelectContent>
@@ -123,62 +97,44 @@ const PersonalInfo = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="address"
-              className="text-sm font-medium text-gray-900">
-              Address
-            </Label>
+          <div className="space-y-1">
+            <Label htmlFor="address">Address</Label>
             <Input
               id="address"
               value={data.address || ""}
               onChange={(e) => handleChange("address", e.target.value)}
               placeholder="Section-06, Mirpur, Dhaka."
-              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
             />
           </div>
         </div>
 
         {/* City, State, ZIP Code */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="city" className="text-sm font-medium text-gray-900">
-              City
-            </Label>
+          <div className="space-y-1">
+            <Label htmlFor="city">City</Label>
             <Input
               id="city"
               value={data.city || ""}
               onChange={(e) => handleChange("city", e.target.value)}
               placeholder="Dhaka"
-              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
             />
           </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="state"
-              className="text-sm font-medium text-gray-900">
-              State
-            </Label>
+          <div className="space-y-1">
+            <Label htmlFor="state">State</Label>
             <Input
               id="state"
               value={data.state || ""}
               onChange={(e) => handleChange("state", e.target.value)}
               placeholder="Dhaka"
-              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
             />
           </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="zipCode"
-              className="text-sm font-medium text-gray-900">
-              ZIP Code
-            </Label>
+          <div className="space-y-1">
+            <Label htmlFor="zipCode">ZIP Code</Label>
             <Input
               id="zipCode"
               value={data.zip_code || ""}
               onChange={(e) => handleChange("zip_code", e.target.value)}
               placeholder="1216"
-              className="h-12 border-gray-300 focus:border-gray-400 focus:ring-0"
             />
           </div>
         </div>
