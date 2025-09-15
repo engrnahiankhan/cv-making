@@ -50,7 +50,7 @@ export default function Home() {
 
           <Button
             onClick={handleStart}
-            className="rounded-[6px] bg-prime py-3 px-6 font-medium text-base sm:text-lg">
+            className="rounded-[6px] bg-prime py-4 px-6 sm:py-6 sm:px-8 font-medium text-base sm:text-lg">
             Start Now
           </Button>
         </div>
