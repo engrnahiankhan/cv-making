@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ReduxProvider } from "@/redux/provider";
 
 export const metadata: Metadata = {
   title: "CV Making",
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased`}>{children}</body>
+      <body className={`antialiased`}>
+        <ReduxProvider>{children}</ReduxProvider>
+      </body>
     </html>
   );
 }
