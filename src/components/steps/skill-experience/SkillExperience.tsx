@@ -11,8 +11,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, CloudUpload, Plus, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 
 const SkillExperience = () => {
   const dispatch = useAppDispatch();
@@ -21,6 +22,30 @@ const SkillExperience = () => {
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [openEndDate, setOpenEndDate] = useState(false);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [skillInput, setSkillInput] = useState("");
+  const [skills, setSkills] = useState<string[]>([
+    "UI Designer",
+    "UX Designer",
+    "Figma",
+  ]);
+
+  const addSkill = () => {
+    if (skillInput.trim() && !skills.includes(skillInput.trim())) {
+      setSkills([...skills, skillInput.trim()]);
+      setSkillInput("");
+    }
+  };
+
+  const removeSkill = (skillToRemove: string) => {
+    setSkills(skills.filter((skill) => skill !== skillToRemove));
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addSkill();
+    }
+  };
 
   const handleChange = (
     id: number,
@@ -147,6 +172,63 @@ const SkillExperience = () => {
               placeholder="Describe your key responsibilities and achievements"
               className="h-[200px] resize-none"
             />
+          </div>
+
+          {/* Achievement and Skills */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-1">
+              <Label className="text-sm font-medium text-gray-900">
+                Achievements
+              </Label>
+              <div className="border border-[#D4D4D4] rounded-[8px] p-8 text-center bg-[#FCFCFD] hover:bg-gray-100 transition-colors">
+                <CloudUpload className="w-8 h-8 text-[#333333] mx-auto mb-3" />
+                <p className="text-[#333333] font-normal text-lg mb-1">
+                  Drop file or browse
+                </p>
+                <p className="text-base text-[#BABABA]">
+                  Format: .jpeg, .png & Max file size: 25 MB
+                </p>
+                <Button
+                  variant="secondary"
+                  className="mt-2 bg-subtle hover:bg-gray-600 text-white text-sm font-normal tracking-[1px]">
+                  Browse Files
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-0.5">
+              <Label htmlFor={`skills-${exp.id}`}>Skills</Label>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={skillInput}
+                    onChange={(e) => setSkillInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Add a skill"
+                    className="!h-10 !px-4 text-base"
+                  />
+                  <Button onClick={addSkill} size="icon" className="px-3">
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {skills.map((skill, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-3 py-1 text-sm capitalize">
+                      {skill}
+                      <button
+                        onClick={() => removeSkill(skill)}
+                        className="ml-2 hover:text-red-500">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       ))}
