@@ -27,7 +27,6 @@ const SkillExperience = () => {
   const [openStartDate, setOpenStartDate] = useState<number | null>(null);
   const [openEndDate, setOpenEndDate] = useState<number | null>(null);
 
-  // 🔹 Manage skill input per work experience ID
   const [skillInputs, setSkillInputs] = useState<Record<number, string>>({});
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -45,7 +44,7 @@ const SkillExperience = () => {
     if (skillInput && !currentSkills.includes(skillInput)) {
       const updated = [...currentSkills, skillInput];
       handleChange(id, "skill", updated);
-      setSkillInputs((prev) => ({ ...prev, [id]: "" })); // reset only that input
+      setSkillInputs((prev) => ({ ...prev, [id]: "" }));
     }
   };
 
