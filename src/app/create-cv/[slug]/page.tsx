@@ -6,7 +6,7 @@ import PersonalInfo from "@/components/features/PersonalInfo";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { nextStep, resetForm } from "@/redux/slices/formSlice";
 import CareerSummary from "@/components/features/CareerSummary";
-import { ChevronRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const steps = [
   { id: 1, number: "01", title: "Personal Information" },
@@ -23,7 +23,7 @@ const MultiStepForm = () => {
   const { step, data } = useAppSelector((state) => state.form);
 
   const handleSubmit = () => {
-    console.log("✅ Final Submitted Data:", data);
+    console.log("Submitted Data:", data);
     alert("Check console for submitted data");
     dispatch(resetForm());
   };
@@ -85,16 +85,16 @@ const MultiStepForm = () => {
             {step < 6 ? (
               <Button
                 onClick={() => dispatch(nextStep())}
-                className="w-full h-14 bg-green-500 hover:bg-green-600 text-white font-medium text-base rounded-lg flex items-center justify-center gap-2">
+                className="w-full h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px]">
                 Next
-                <ChevronRight className="w-5 h-5" />
+                <ArrowRight className="w-6 h-6" />
               </Button>
             ) : (
-              <Button
+              <button
                 onClick={handleSubmit}
-                className="w-full h-14 bg-green-500 hover:bg-green-600 text-white font-medium text-base rounded-lg flex items-center justify-center gap-2">
+                className="w-full h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px]">
                 Generate Resume
-              </Button>
+              </button>
             )}
           </div>
         </div>
