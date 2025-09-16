@@ -15,9 +15,9 @@ const formSlice = createSlice({
   name: "form",
   initialState,
   reducers: {
-    updateField: (
-      state,
-      action: PayloadAction<{ field: keyof FormStructure; value: any }>
+    updateField: <K extends keyof FormStructure>(
+      state: FormState,
+      action: PayloadAction<{ field: K; value: FormStructure[K] }>
     ) => {
       state.data[action.payload.field] = action.payload.value;
     },

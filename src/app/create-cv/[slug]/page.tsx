@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import PersonalInfo from "@/components/features/PersonalInfo";
+import PersonalInfo from "@/components/steps/PersonalInfo";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { nextStep, resetForm } from "@/redux/slices/formSlice";
-import CareerSummary from "@/components/features/CareerSummary";
+import CareerSummary from "@/components/steps/CareerSummary";
 import { ArrowRight } from "lucide-react";
 
 const steps = [
