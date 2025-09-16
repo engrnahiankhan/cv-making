@@ -36,7 +36,7 @@ const MultiStepForm = () => {
 
   return (
     <div className="min-h-screen py-16 px-4">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="mb-16">
           <div className="relative">
             {/* Background line */}
@@ -83,7 +83,7 @@ const MultiStepForm = () => {
           </div>
         </div>
 
-        <div className="px-5 sm:px-[100px]">
+        <div className="px-5 sm:px-[120px]">
           {step === 1 && <PersonalInfo />}
           {step === 2 && <CareerSummary />}
           {step === 3 && <SkillExperience />}
