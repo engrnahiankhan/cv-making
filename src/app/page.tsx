@@ -1,7 +1,22 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
+function generateSlug() {
+  const timestamp = Date.now().toString(36); //
+  const randomStr = Math.random().toString(36).substring(2, 6);
+  return `xyz-${timestamp}-${randomStr}`;
+}
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleStart = () => {
+    const slug = generateSlug();
+    router.push(`/create-cv/${slug}`);
+  };
   return (
     <div className="flex items-center justify-center min-h-screen px-4 bg-white">
       <div className="flex gap-6 flex-col-reverse lg:flex-row items-center justify-center max-w-7xl w-full">
@@ -33,7 +48,9 @@ export default function Home() {
             you <br /> noticed by top employers.
           </p>
 
-          <Button className="rounded-[6px] bg-prime py-3 px-6 font-medium text-base sm:text-lg">
+          <Button
+            onClick={handleStart}
+            className="rounded-[6px] bg-prime py-3 px-6 font-medium text-base sm:text-lg">
             Start Now
           </Button>
         </div>
