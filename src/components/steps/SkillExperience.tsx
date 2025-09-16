@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import {
   addNewWorkExperience,
   updateSkillExperienceForm,
+  updateWorkExperienceDate,
 } from "@/redux/slices/formSlice";
 import { SkillAndExperience } from "@/types/formTypes";
 import { useRef, useState } from "react";
@@ -21,8 +22,9 @@ import { Badge } from "@/components/ui/badge";
 const SkillExperience = () => {
   const dispatch = useAppDispatch();
   const { data } = useAppSelector((state) => state.form);
-  const [openStartDate, setOpenStartDate] = useState(false);
-  const [openEndDate, setOpenEndDate] = useState(false);
+  const [openStartDate, setOpenStartDate] = useState<number | null>(null);
+  const [openEndDate, setOpenEndDate] = useState<number | null>(null);
+
   const [skillInput, setSkillInput] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -115,7 +117,11 @@ const SkillExperience = () => {
             <div className="space-y-1">
               <Label htmlFor={`job-duration-${exp.id}`}>Duration</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
+                <Popover
+                  open={openStartDate === exp.id}
+                  onOpenChange={(isOpen) =>
+                    setOpenStartDate(isOpen ? exp.id : null)
+                  }>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -137,12 +143,14 @@ const SkillExperience = () => {
                       }
                       captionLayout="dropdown"
                       onSelect={(date) => {
-                        setOpenStartDate(false);
+                        setOpenEndDate(null);
                         if (date) {
-                          handleChange(
-                            exp.id,
-                            "start_date",
-                            date.toISOString()
+                          dispatch(
+                            updateWorkExperienceDate({
+                              id: exp.id,
+                              field: "start_date",
+                              value: date.toISOString(),
+                            })
                           );
                         }
                       }}
@@ -150,7 +158,11 @@ const SkillExperience = () => {
                   </PopoverContent>
                 </Popover>
 
-                <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
+                <Popover
+                  open={openEndDate === exp.id}
+                  onOpenChange={(isOpen) =>
+                    setOpenEndDate(isOpen ? exp.id : null)
+                  }>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -172,9 +184,15 @@ const SkillExperience = () => {
                       }
                       captionLayout="dropdown"
                       onSelect={(date) => {
-                        setOpenEndDate(false);
+                        setOpenEndDate(null);
                         if (date) {
-                          handleChange(exp.id, "end_date", date.toISOString());
+                          dispatch(
+                            updateWorkExperienceDate({
+                              id: exp.id,
+                              field: "end_date",
+                              value: date.toISOString(),
+                            })
+                          );
                         }
                       }}
                     />

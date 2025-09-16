@@ -47,7 +47,7 @@ const formSlice = createSlice({
 
     initializeForm: (state) => {
       state.data = {
-        id: Date.now(),
+        id: Date.now() + Math.random(),
         slug: "",
         first_name: "",
         last_name: "",
@@ -62,7 +62,7 @@ const formSlice = createSlice({
         job_description: "",
         skill_and_experience: [
           {
-            id: Date.now(),
+            id: Date.now() + Math.random(),
             job_title: "",
             start_date: "",
             end_date: "",
@@ -75,7 +75,7 @@ const formSlice = createSlice({
         education_and_certifications: {
           education: [
             {
-              id: Date.now(),
+              id: Date.now() + Math.random(),
               degree: "",
               institution_name: "",
               major: "",
@@ -86,7 +86,7 @@ const formSlice = createSlice({
           ],
           certifications: [
             {
-              id: Date.now(),
+              id: Date.now() + Math.random(),
               certification_title: "",
               issuing_organization: "",
               issue_date: "",
@@ -109,7 +109,7 @@ const formSlice = createSlice({
       }
 
       const newExperience: SkillAndExperience = {
-        id: Date.now(),
+        id: Date.now() + Math.random(),
         job_title: "",
         start_date: "",
         end_date: "",
@@ -130,7 +130,7 @@ const formSlice = createSlice({
         };
       }
       state.data.education_and_certifications.education.push({
-        id: Date.now(),
+        id: Date.now() + Math.random(),
         degree: "",
         institution_name: "",
         major: "",
@@ -148,7 +148,7 @@ const formSlice = createSlice({
         };
       }
       state.data.education_and_certifications.certifications.push({
-        id: Date.now(),
+        id: Date.now() + Math.random(),
         certification_title: "",
         issuing_organization: "",
         issue_date: "",
@@ -231,6 +231,64 @@ const formSlice = createSlice({
       state.data.contact_information[field] = value;
     },
 
+    updateWorkExperienceDate: (
+      state,
+      action: PayloadAction<{
+        id: number;
+        field: "start_date" | "end_date";
+        value: string;
+      }>
+    ) => {
+      const { id, field, value } = action.payload;
+      if (!state.data.skill_and_experience) return;
+
+      const experience = state.data.skill_and_experience.find(
+        (exp) => exp.id === id
+      );
+      if (experience) {
+        experience[field] = value;
+      }
+    },
+
+    updateEducationDate: (
+      state,
+      action: PayloadAction<{
+        id: number;
+        field: "start_date" | "end_date";
+        value: string;
+      }>
+    ) => {
+      const { id, field, value } = action.payload;
+      if (!state.data.education_and_certifications) return;
+
+      const education = state.data.education_and_certifications.education.find(
+        (edu) => edu.id === id
+      );
+      if (education) {
+        education[field] = value;
+      }
+    },
+
+    updateCertificationDate: (
+      state,
+      action: PayloadAction<{
+        id: number;
+        field: "issue_date" | "expiration_date";
+        value: string;
+      }>
+    ) => {
+      const { id, field, value } = action.payload;
+      if (!state.data.education_and_certifications) return;
+
+      const certification =
+        state.data.education_and_certifications.certifications.find(
+          (cert) => cert.id === id
+        );
+      if (certification) {
+        certification[field] = value;
+      }
+    },
+
     toggleEducationAndCertificationsAction: (
       state,
       action: PayloadAction<"education" | "certifications">
@@ -254,6 +312,9 @@ export const {
   updateCertificateForm,
   updateSkillExperienceForm,
   updateContactInformation,
+  updateWorkExperienceDate,
+  updateEducationDate,
+  updateCertificationDate,
   toggleEducationAndCertificationsAction,
 } = formSlice.actions;
 

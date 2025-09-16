@@ -79,8 +79,8 @@ const PersonalInfo = () => {
         </div>
 
         {/* Country/Region and Address */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-1">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-1 md:col-span-1">
             <Label htmlFor="country">Country/Region</Label>
             <Select
               value={data.country || ""}
@@ -97,7 +97,7 @@ const PersonalInfo = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 md:col-span-2">
             <Label htmlFor="address">Address</Label>
             <Input
               id="address"
