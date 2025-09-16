@@ -46,11 +46,11 @@ const CareerSummary = () => {
     <div className="space-y-8">
       <div className="space-y-2 sm:space-y-4">
         <h1 className="text-3xl sm:text-5xl font-semibold text-main">
-          Tell Us About Yourself
+          Your Career Overview
         </h1>
         <p className="text-subtle text-base sm:text-lg font-normal">
-          Fill in your personal details so we can tailor your resume perfectly
-          to your career goals.
+          A strong career summary will make a lasting impression on recruiters.
+          Let’s create a summary that highlights your experience and goals.
         </p>
       </div>
 

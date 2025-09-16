@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import PersonalInfo from "@/components/steps/PersonalInfo";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
-import { nextStep, resetForm } from "@/redux/slices/formSlice";
+import { initializeForm, nextStep, resetForm } from "@/redux/slices/formSlice";
 import CareerSummary from "@/components/steps/CareerSummary";
 import { ArrowRight } from "lucide-react";
+import { useEffect } from "react";
+import SkillExperience from "@/components/steps/skill-experience/SkillExperience";
 
 const steps = [
   { id: 1, number: "01", title: "Personal Information" },
@@ -21,6 +23,10 @@ const steps = [
 const MultiStepForm = () => {
   const dispatch = useAppDispatch();
   const { step, data } = useAppSelector((state) => state.form);
+
+  useEffect(() => {
+    dispatch(initializeForm());
+  }, [dispatch]);
 
   const handleSubmit = () => {
     console.log("Submitted Data:", data);
@@ -80,6 +86,7 @@ const MultiStepForm = () => {
         <div className="px-5 sm:px-[100px]">
           {step === 1 && <PersonalInfo />}
           {step === 2 && <CareerSummary />}
+          {step === 3 && <SkillExperience />}
 
           <div className="pt-8">
             {step < 6 ? (

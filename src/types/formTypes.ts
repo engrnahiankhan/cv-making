@@ -1,15 +1,15 @@
 interface SkillAndExperience {
   id: number;
   job_title: string;
+  company_name: string;
   start_date: string;
   end_date: string;
-  city: string;
   job_description: string;
   achievements: string;
   skill: string[];
 }
 
-interface Education {
+export interface Education {
   id: number;
   degree: string;
   institution_name: string;
