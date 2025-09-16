@@ -22,7 +22,6 @@ const Certifications = () => {
     (state) => state.form
   );
 
-  // Track open states per certificate
   const [openStartDates, setOpenStartDates] = useState<Record<number, boolean>>(
     {}
   );

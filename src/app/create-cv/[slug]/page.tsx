@@ -92,7 +92,7 @@ const MultiStepForm = () => {
           {step === 4 && <EduCertificate />}
           {step === 5 && <ContactInfo />}
 
-          <div className="pt-12">
+          <div className="pt-8 md:pt-12">
             {step < 6 ? (
               <Button
                 onClick={() => dispatch(nextStep())}
