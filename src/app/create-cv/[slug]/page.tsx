@@ -43,13 +43,22 @@ const MultiStepForm = () => {
         <div className="mb-16">
           <div className="relative">
             {/* Background line */}
-            <div className="absolute top-6 left-0 right-0 h-[5px] bg-[#E8E8E8] "></div>
+            <div
+              className="absolute top-6 h-[5px] bg-[#E8E8E8]"
+              style={{ left: "24px", right: "24px" }}></div>
 
             {/* Progress line */}
             <div
-              className="absolute top-6 left-0 h-[5px] bg-prime transition-all duration-500"
+              className="absolute top-6 h-[5px] bg-prime transition-all duration-500"
               style={{
-                width: `${((step - 0.8) / (steps.length - 1)) * 100}%`,
+                left: "24px",
+                width:
+                  step > 1
+                    ? `${
+                        ((step - 1) / (steps.length - 1)) *
+                        (100 - 48 / steps.length)
+                      }%`
+                    : "0%",
               }}></div>
 
             {/* Step circles */}
