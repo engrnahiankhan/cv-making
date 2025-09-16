@@ -10,6 +10,7 @@ import { ArrowRight } from "lucide-react";
 import { useEffect } from "react";
 import SkillExperience from "@/components/steps/SkillExperience";
 import EduCertificate from "@/components/steps/edu-certificate/EduCertificate";
+import ContactInfo from "@/components/steps/ContactInfo";
 
 const steps = [
   { id: 1, number: "01", title: "Personal Information" },
@@ -89,8 +90,9 @@ const MultiStepForm = () => {
           {step === 2 && <CareerSummary />}
           {step === 3 && <SkillExperience />}
           {step === 4 && <EduCertificate />}
+          {step === 5 && <ContactInfo />}
 
-          <div className="pt-8">
+          <div className="pt-12">
             {step < 6 ? (
               <Button
                 onClick={() => dispatch(nextStep())}

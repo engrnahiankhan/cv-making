@@ -3,7 +3,7 @@ import "./globals.css";
 import { ReduxProvider } from "@/redux/provider";
 
 export const metadata: Metadata = {
-  title: "CV Making",
+  title: "CV Maker",
   description: "AI powered CV making application",
 };
 

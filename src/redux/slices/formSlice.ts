@@ -97,7 +97,7 @@ const formSlice = createSlice({
         contact_information: {
           linkedin_profile: "",
           portfolio_website: "",
-          other_social_media: [],
+          other_social_media: "",
           other_social_media_links: "",
         },
       };
@@ -211,6 +211,26 @@ const formSlice = createSlice({
       }
     },
 
+    updateContactInformation: (
+      state,
+      action: PayloadAction<{
+        field: keyof FormStructure["contact_information"];
+        value: string;
+      }>
+    ) => {
+      if (!state.data.contact_information) {
+        state.data.contact_information = {
+          linkedin_profile: "",
+          portfolio_website: "",
+          other_social_media: "",
+          other_social_media_links: "",
+        };
+      }
+
+      const { field, value } = action.payload;
+      state.data.contact_information[field] = value;
+    },
+
     toggleEducationAndCertificationsAction: (
       state,
       action: PayloadAction<"education" | "certifications">
@@ -233,6 +253,7 @@ export const {
   updateEducationForm,
   updateCertificateForm,
   updateSkillExperienceForm,
+  updateContactInformation,
   toggleEducationAndCertificationsAction,
 } = formSlice.actions;
 

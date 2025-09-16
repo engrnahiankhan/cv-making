@@ -35,7 +35,7 @@ interface EducationAndCertifications {
 interface ContactInformation {
   linkedin_profile: string;
   portfolio_website: string;
-  other_social_media: string[];
+  other_social_media: string;
   other_social_media_links: string;
 }
 

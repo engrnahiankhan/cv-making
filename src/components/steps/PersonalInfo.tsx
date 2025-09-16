@@ -41,7 +41,7 @@ const PersonalInfo = () => {
               id="firstName"
               value={data.first_name || ""}
               onChange={(e) => handleChange("first_name", e.target.value)}
-              placeholder="Saifur"
+              placeholder="John"
             />
           </div>
           <div className="space-y-1">
@@ -50,7 +50,7 @@ const PersonalInfo = () => {
               id="lastName"
               value={data.last_name || ""}
               onChange={(e) => handleChange("last_name", e.target.value)}
-              placeholder="Rahman"
+              placeholder="Doe"
             />
           </div>
         </div>
@@ -63,7 +63,7 @@ const PersonalInfo = () => {
               id="phone"
               value={data.phone_number || ""}
               onChange={(e) => handleChange("phone_number", e.target.value)}
-              placeholder="+880 1567808747"
+              placeholder="+0997808747"
             />
           </div>
           <div className="space-y-1">
@@ -73,7 +73,7 @@ const PersonalInfo = () => {
               type="email"
               value={data.email || ""}
               onChange={(e) => handleChange("email", e.target.value)}
-              placeholder="ux.saifur.info@gmail.com"
+              placeholder="johndoe@gmail.com"
             />
           </div>
         </div>
