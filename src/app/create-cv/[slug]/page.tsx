@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import SkillExperience from "@/components/steps/SkillExperience";
 import EduCertificate from "@/components/steps/edu-certificate/EduCertificate";
 import ContactInfo from "@/components/steps/ContactInfo";
+import AiStep from "@/components/steps/AiStep";
 
 const steps = [
   { id: 1, number: "01", title: "Personal Information" },
@@ -91,19 +92,20 @@ const MultiStepForm = () => {
           {step === 3 && <SkillExperience />}
           {step === 4 && <EduCertificate />}
           {step === 5 && <ContactInfo />}
+          {step === 6 && <AiStep />}
 
           <div className="pt-8 md:pt-12">
             {step < 6 ? (
               <Button
                 onClick={() => dispatch(nextStep())}
-                className="w-full h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px]">
+                className="w-full h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] transition-colors">
                 Next
                 <ArrowRight className="w-6 h-6" />
               </Button>
             ) : (
               <button
                 onClick={handleSubmit}
-                className="w-full h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px]">
+                className="w-full h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] cursor-pointer transition-colors">
                 Generate Resume
               </button>
             )}
