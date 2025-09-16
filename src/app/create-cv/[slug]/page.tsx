@@ -97,7 +97,7 @@ const MultiStepForm = () => {
 
             {/* Progress line */}
             <div
-              className="absolute top-6 left-0 h-0.5 bg-green-500 transition-all duration-500"
+              className="absolute top-6 left-0 h-[5px] bg-green-500 transition-all duration-500"
               style={{
                 width: `${((currentStep - 1) / (steps.length - 1)) * 100}%`,
               }}></div>
@@ -119,12 +119,12 @@ const MultiStepForm = () => {
                       )}>
                       {step.number}
                     </div>
-                    <div className="text-center mt-3 max-w-20">
+                    <div className="text-center mt-3 max-w-24">
                       <p
                         className={cn(
-                          "text-xs font-medium leading-tight",
-                          isActive && "text-gray-900",
-                          !isActive && "text-gray-600"
+                          "text-base font-medium leading-[150%]",
+                          isActive && "text-main",
+                          !isActive && "text-subtle"
                         )}>
                         {step.title}
                       </p>
