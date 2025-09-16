@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import {
   addNewEducation,
   toggleEducationAndCertificationsAction,
+  updateEducationDate,
   updateEducationForm,
 } from "@/redux/slices/formSlice";
 import { Education as EducationType } from "@/types/formTypes";
@@ -20,8 +21,8 @@ import { CalendarDays, CloudUpload, Plus } from "lucide-react";
 const Education = () => {
   const dispatch = useAppDispatch();
   const { data } = useAppSelector((state) => state.form);
-  const [openStartDate, setOpenStartDate] = useState(false);
-  const [openEndDate, setOpenEndDate] = useState(false);
+  const [openStartDate, setOpenStartDate] = useState<number | null>(null);
+  const [openEndDate, setOpenEndDate] = useState<number | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -105,7 +106,11 @@ const Education = () => {
                 Graduation
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
+                <Popover
+                  open={openStartDate === exp.id}
+                  onOpenChange={(isOpen) =>
+                    setOpenStartDate(isOpen ? exp.id : null)
+                  }>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -127,12 +132,14 @@ const Education = () => {
                       }
                       captionLayout="dropdown"
                       onSelect={(date) => {
-                        setOpenStartDate(false);
+                        setOpenStartDate(null);
                         if (date) {
-                          handleChange(
-                            exp.id,
-                            "start_date",
-                            date.toISOString()
+                          dispatch(
+                            updateEducationDate({
+                              id: exp.id,
+                              field: "start_date",
+                              value: date.toISOString(),
+                            })
                           );
                         }
                       }}
@@ -140,7 +147,11 @@ const Education = () => {
                   </PopoverContent>
                 </Popover>
 
-                <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
+                <Popover
+                  open={openEndDate === exp.id}
+                  onOpenChange={(isOpen) =>
+                    setOpenEndDate(isOpen ? exp.id : null)
+                  }>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -162,9 +173,15 @@ const Education = () => {
                       }
                       captionLayout="dropdown"
                       onSelect={(date) => {
-                        setOpenEndDate(false);
+                        setOpenEndDate(null);
                         if (date) {
-                          handleChange(exp.id, "end_date", date.toISOString());
+                          dispatch(
+                            updateEducationDate({
+                              id: exp.id,
+                              field: "end_date",
+                              value: date.toISOString(),
+                            })
+                          );
                         }
                       }}
                     />
