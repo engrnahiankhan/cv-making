@@ -279,7 +279,7 @@ const SkillExperience = () => {
                     <Button
                       onClick={() => addSkill(exp.id, exp.skill)}
                       size="icon"
-                      className="px-3">
+                      className="px-3 !rounded-[6px">
                       <Plus className="w-4 h-4" />
                     </Button>
                   </div>
