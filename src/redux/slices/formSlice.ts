@@ -8,11 +8,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface FormState {
   step: number;
   data: Partial<FormStructure>;
+  toggleEducationAndCertifications: "education" | "certifications";
 }
 
 const initialState: FormState = {
   step: 1,
   data: {},
+  toggleEducationAndCertifications: "education",
 };
 
 const formSlice = createSlice({
@@ -208,6 +210,13 @@ const formSlice = createSlice({
         exp[action.payload.field] = action.payload.value as never;
       }
     },
+
+    toggleEducationAndCertificationsAction: (
+      state,
+      action: PayloadAction<"education" | "certifications">
+    ) => {
+      state.toggleEducationAndCertifications = action.payload;
+    },
   },
 });
 
@@ -224,6 +233,7 @@ export const {
   updateEducationForm,
   updateCertificateForm,
   updateSkillExperienceForm,
+  toggleEducationAndCertificationsAction,
 } = formSlice.actions;
 
 export default formSlice.reducer;

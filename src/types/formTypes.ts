@@ -19,7 +19,7 @@ export interface Education {
   achievements: string;
 }
 
-interface Certification {
+export interface Certification {
   id: number;
   certification_title: string;
   issuing_organization: string;

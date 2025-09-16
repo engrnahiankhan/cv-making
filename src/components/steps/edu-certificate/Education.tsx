@@ -4,63 +4,37 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import {
-  addNewWorkExperience,
-  updateSkillExperienceForm,
+  addNewEducation,
+  toggleEducationAndCertificationsAction,
+  updateEducationForm,
 } from "@/redux/slices/formSlice";
-import { SkillAndExperience } from "@/types/formTypes";
+import { Education as EducationType } from "@/types/formTypes";
 import { useRef, useState } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarDays, ChevronRight, CloudUpload, Plus, X } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import { CalendarDays, CloudUpload, Plus } from "lucide-react";
 
-const SkillExperience = () => {
+const Education = () => {
   const dispatch = useAppDispatch();
   const { data } = useAppSelector((state) => state.form);
   const [openStartDate, setOpenStartDate] = useState(false);
   const [openEndDate, setOpenEndDate] = useState(false);
-  const [skillInput, setSkillInput] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (
     id: number,
-    field: keyof SkillAndExperience,
-    value: string | string[]
+    field: keyof EducationType,
+    value: string
   ) => {
-    dispatch(updateSkillExperienceForm({ id, field, value }));
+    dispatch(updateEducationForm({ id, field, value }));
   };
 
-  const addSkill = (id: number, currentSkills: string[]) => {
-    if (skillInput.trim() && !currentSkills.includes(skillInput.trim())) {
-      const updated = [...currentSkills, skillInput.trim()];
-      handleChange(id, "skill", updated);
-      setSkillInput("");
-    }
-  };
-
-  const removeSkill = (
-    id: number,
-    currentSkills: string[],
-    skillToRemove: string
-  ) => {
-    const updated = currentSkills.filter((s) => s !== skillToRemove);
-    handleChange(id, "skill", updated);
-  };
-
-  const handleKeyPress = (
-    e: React.KeyboardEvent,
-    id: number,
-    currentSkills: string[]
-  ) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addSkill(id, currentSkills);
-    }
+  const handleToggle = (value: "education" | "certifications") => {
+    dispatch(toggleEducationAndCertificationsAction(value));
   };
 
   return (
@@ -69,51 +43,67 @@ const SkillExperience = () => {
         <div className="space-y-2 sm:space-y-4">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl sm:text-5xl font-semibold text-main">
-              Your Work Experience & Skills
+              Your Educational Background
             </h1>
-            <button className="bg-[#F5F5F5] py-2 px-5 gap-3 text-[#101010] font-medium text-xl rounded-[8px] flex items-center hover:bg-gray-200">
-              Skip <ChevronRight />
+            <button
+              onClick={() => handleToggle("certifications")}
+              className="bg-main py-2 px-5 gap-3 text-white font-medium text-base rounded-[6px] flex items-center hover:bg-black cursor-pointer transition-colors">
+              Certifications
             </button>
           </div>
 
           <p className="text-subtle text-base sm:text-lg font-normal">
-            Highlight your work experience and skills. The more detail you
-            provide, the better the AI can tailor your resume to match job
-            opportunities.
+            Provide your academic qualifications and any relevant certifications
+            to strengthen your resume.
           </p>
         </div>
 
-        {data.skill_and_experience?.map((exp) => (
+        {data.education_and_certifications?.education?.map((exp) => (
           <div key={exp.id} className="space-y-8">
-            {/* Job title and Company Name */}
+            {/* Degree */}
+            <div className="space-y-1">
+              <Label htmlFor={`degree-${exp.id}`}>Your Degree</Label>
+              <Input
+                id={`degree-${exp.id}`}
+                value={exp.degree || ""}
+                onChange={(e) => handleChange(exp.id, "degree", e.target.value)}
+                placeholder="Enter your degree"
+              />
+            </div>
+
+            {/* Institution Name and Major */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
-                <Label htmlFor={`jobTitle-${exp.id}`}>Job Title</Label>
+                <Label htmlFor={`institutionName-${exp.id}`}>
+                  Institution Name
+                </Label>
                 <Input
-                  id={`jobTitle-${exp.id}`}
-                  value={exp.job_title || ""}
+                  id={`institutionName-${exp.id}`}
+                  value={exp.institution_name || ""}
                   onChange={(e) =>
-                    handleChange(exp.id, "job_title", e.target.value)
+                    handleChange(exp.id, "institution_name", e.target.value)
                   }
-                  placeholder="Enter your job title"
+                  placeholder="Enter your institution name"
                 />
               </div>
               <div className="space-y-1">
-                <Label htmlFor={`companyName-${exp.id}`}>Company Name</Label>
+                <Label htmlFor={`major-${exp.id}`}>Major</Label>
                 <Input
-                  id={`companyName-${exp.id}`}
-                  value={exp.company_name || ""}
+                  id={`major-${exp.id}`}
+                  value={exp.major || ""}
                   onChange={(e) =>
-                    handleChange(exp.id, "company_name", e.target.value)
+                    handleChange(exp.id, "major", e.target.value)
                   }
-                  placeholder="Enter your company name"
+                  placeholder="Enter your major"
                 />
               </div>
             </div>
 
-            {/* Job Duration */}
+            {/* Graduation Duration */}
             <div className="space-y-1">
-              <Label htmlFor={`job-duration-${exp.id}`}>Duration</Label>
+              <Label htmlFor={`graduation-duration-${exp.id}`}>
+                Graduation
+              </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                   <PopoverTrigger asChild>
@@ -123,7 +113,7 @@ const SkillExperience = () => {
                       className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
                       {exp.start_date
                         ? new Date(exp.start_date).toLocaleDateString()
-                        : "Select date"}
+                        : "Start date"}
                       <CalendarDays className="text-subtle w-6 h-6" />
                     </Button>
                   </PopoverTrigger>
@@ -158,7 +148,7 @@ const SkillExperience = () => {
                       className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
                       {exp.end_date
                         ? new Date(exp.end_date).toLocaleDateString()
-                        : "Select date"}
+                        : "End date"}
                       <CalendarDays className="text-subtle w-6 h-6" />
                     </Button>
                   </PopoverTrigger>
@@ -183,23 +173,7 @@ const SkillExperience = () => {
               </div>
             </div>
 
-            {/* Job Description */}
-            <div className="space-y-1">
-              <Label htmlFor={`jobDescription-${exp.id}`}>
-                Job Description/Responsibilities
-              </Label>
-              <Textarea
-                id={`jobDescription-${exp.id}`}
-                value={exp.job_description || ""}
-                onChange={(e) =>
-                  handleChange(exp.id, "job_description", e.target.value)
-                }
-                placeholder="Describe your key responsibilities and achievements"
-                className="h-[200px] resize-none"
-              />
-            </div>
-
-            {/* Achievement and Skills */}
+            {/* Achievements */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
                 <Label className="text-sm font-medium text-gray-900">
@@ -236,44 +210,6 @@ const SkillExperience = () => {
                   />
                 </div>
               </div>
-
-              {/* Skill */}
-              <div className="space-y-0.5">
-                <Label htmlFor={`skills-${exp.id}`}>Skills</Label>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={skillInput}
-                      onChange={(e) => setSkillInput(e.target.value)}
-                      onKeyPress={(e) => handleKeyPress(e, exp.id, exp.skill)}
-                      placeholder="Add a skill"
-                      className="!h-10 !px-4 text-base"
-                    />
-                    <Button
-                      onClick={() => addSkill(exp.id, exp.skill)}
-                      size="icon"
-                      className="px-3">
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    {exp.skill?.map((skill, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-3 py-1 text-sm capitalize">
-                        {skill}
-                        <button
-                          onClick={() => removeSkill(exp.id, exp.skill, skill)}
-                          className="ml-2 hover:text-red-500">
-                          <X className="w-3 h-3" />
-                        </button>
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
             </div>
 
             <div className="border-b-[2px] border-[#E0E0E0] w-full" />
@@ -283,12 +219,12 @@ const SkillExperience = () => {
 
       <button
         className="font-medium text-xl text-prime hover:text-green-600 transition-colors flex items-center gap-3 cursor-pointer duration-200 pt-6"
-        onClick={() => dispatch(addNewWorkExperience())}>
+        onClick={() => dispatch(addNewEducation())}>
         <Plus className="w-6 h-6" />
-        Add Another Work Experience
+        Add Another Degree
       </button>
     </>
   );
 };
 
-export default SkillExperience;
+export default Education;

@@ -50,7 +50,8 @@ const CareerSummary = () => {
         </h1>
         <p className="text-subtle text-base sm:text-lg font-normal">
           A strong career summary will make a lasting impression on recruiters.
-          Let’s create a summary that highlights your experience and goals.
+          Let’s create a summary that <br /> highlights your experience and
+          goals.
         </p>
       </div>
 

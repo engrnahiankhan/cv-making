@@ -8,7 +8,8 @@ import { initializeForm, nextStep, resetForm } from "@/redux/slices/formSlice";
 import CareerSummary from "@/components/steps/CareerSummary";
 import { ArrowRight } from "lucide-react";
 import { useEffect } from "react";
-import SkillExperience from "@/components/steps/skill-experience/SkillExperience";
+import SkillExperience from "@/components/steps/SkillExperience";
+import EduCertificate from "@/components/steps/edu-certificate/EduCertificate";
 
 const steps = [
   { id: 1, number: "01", title: "Personal Information" },
@@ -87,6 +88,7 @@ const MultiStepForm = () => {
           {step === 1 && <PersonalInfo />}
           {step === 2 && <CareerSummary />}
           {step === 3 && <SkillExperience />}
+          {step === 4 && <EduCertificate />}
 
           <div className="pt-8">
             {step < 6 ? (
