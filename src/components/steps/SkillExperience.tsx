@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -25,7 +27,8 @@ const SkillExperience = () => {
   const [openStartDate, setOpenStartDate] = useState<number | null>(null);
   const [openEndDate, setOpenEndDate] = useState<number | null>(null);
 
-  const [skillInput, setSkillInput] = useState("");
+  // 🔹 Manage skill input per work experience ID
+  const [skillInputs, setSkillInputs] = useState<Record<number, string>>({});
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -38,10 +41,11 @@ const SkillExperience = () => {
   };
 
   const addSkill = (id: number, currentSkills: string[]) => {
-    if (skillInput.trim() && !currentSkills.includes(skillInput.trim())) {
-      const updated = [...currentSkills, skillInput.trim()];
+    const skillInput = skillInputs[id]?.trim() || "";
+    if (skillInput && !currentSkills.includes(skillInput)) {
+      const updated = [...currentSkills, skillInput];
       handleChange(id, "skill", updated);
-      setSkillInput("");
+      setSkillInputs((prev) => ({ ...prev, [id]: "" })); // reset only that input
     }
   };
 
@@ -219,6 +223,7 @@ const SkillExperience = () => {
 
             {/* Achievement and Skills */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Achievements */}
               <div className="space-y-1">
                 <Label className="text-sm font-medium text-gray-900">
                   Achievements
@@ -255,14 +260,19 @@ const SkillExperience = () => {
                 </div>
               </div>
 
-              {/* Skill */}
+              {/* Skills */}
               <div className="space-y-0.5">
                 <Label htmlFor={`skills-${exp.id}`}>Skills</Label>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Input
-                      value={skillInput}
-                      onChange={(e) => setSkillInput(e.target.value)}
+                      value={skillInputs[exp.id] || ""}
+                      onChange={(e) =>
+                        setSkillInputs((prev) => ({
+                          ...prev,
+                          [exp.id]: e.target.value,
+                        }))
+                      }
                       onKeyPress={(e) => handleKeyPress(e, exp.id, exp.skill)}
                       placeholder="Add a skill"
                       className="!h-10 !px-4 text-base"
