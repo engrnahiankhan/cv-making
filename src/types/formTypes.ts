@@ -51,7 +51,7 @@ interface FormStructure {
   city: string;
   state: string;
   zip_code: string;
-  job_title: string[];
+  job_title: string;
   job_description: string;
   skill_and_experience: SkillAndExperience[];
   education_and_certifications: EducationAndCertifications;
