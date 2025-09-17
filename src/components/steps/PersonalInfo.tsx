@@ -85,7 +85,7 @@ const PersonalInfo = () => {
             <Select
               value={data.country || ""}
               onValueChange={(value) => handleChange("country", value)}>
-              <SelectTrigger className="!h-[64px] border-gray-300 focus:border-gray-400 focus:ring-0 w-full">
+              <SelectTrigger className="border-gray-300 focus:border-gray-400 focus:ring-0 w-full">
                 <SelectValue placeholder="Bangladesh" />
               </SelectTrigger>
               <SelectContent>
