@@ -3,9 +3,10 @@ import {
   SkillAndExperience,
   Education,
 } from "@/types/formTypes";
+import { initialFormData } from "@/utils/initialForm";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface FormState {
+export interface FormState {
   step: number;
   data: Partial<FormStructure>;
   toggleEducationAndCertifications: "education" | "certifications";
@@ -21,6 +22,9 @@ const formSlice = createSlice({
   name: "form",
   initialState,
   reducers: {
+    stateUpdateAction(state, action: PayloadAction<Partial<FormState>>) {
+      Object.assign(state, action.payload);
+    },
     updateField: <K extends keyof FormStructure>(
       state: FormState,
       action: PayloadAction<{ field: K; value: FormStructure[K] }>
@@ -28,8 +32,9 @@ const formSlice = createSlice({
       state.data[action.payload.field] = action.payload.value;
     },
 
-    saveStepData: (state, action: PayloadAction<Partial<FormStructure>>) => {
-      state.data = { ...state.data, ...action.payload };
+    updateSlugAction(state, action: PayloadAction<string | undefined>) {
+      if (!state.data) state.data = {};
+      state.data.slug = action.payload;
     },
 
     nextStep: (state) => {
@@ -46,61 +51,7 @@ const formSlice = createSlice({
     },
 
     initializeForm: (state) => {
-      state.data = {
-        id: Date.now() + Math.random(),
-        slug: "",
-        first_name: "",
-        last_name: "",
-        phone_number: "",
-        email: "",
-        country: "",
-        address: "",
-        city: "",
-        state: "",
-        zip_code: "",
-        job_title: "",
-        job_description: "",
-        skill_and_experience: [
-          {
-            id: Date.now() + Math.random(),
-            job_title: "",
-            start_date: "",
-            end_date: "",
-            company_name: "",
-            job_description: "",
-            achievements: "",
-            skill: [],
-          },
-        ],
-        education_and_certifications: {
-          education: [
-            {
-              id: Date.now() + Math.random(),
-              degree: "",
-              institution_name: "",
-              major: "",
-              start_date: "",
-              end_date: "",
-              achievements: "",
-            },
-          ],
-          certifications: [
-            {
-              id: Date.now() + Math.random(),
-              certification_title: "",
-              issuing_organization: "",
-              issue_date: "",
-              expiration_date: "",
-            },
-          ],
-        },
-        contact_information: {
-          linkedin_profile: "",
-          portfolio_website: "",
-          other_social_media: "",
-          other_social_media_links: "",
-        },
-      };
+      state.data = initialFormData();
     },
 
     addNewWorkExperience: (state) => {
@@ -299,8 +250,9 @@ const formSlice = createSlice({
 });
 
 export const {
+  stateUpdateAction,
   updateField,
-  saveStepData,
+  updateSlugAction,
   nextStep,
   prevStep,
   resetForm,

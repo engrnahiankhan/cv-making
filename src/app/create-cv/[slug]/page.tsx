@@ -4,14 +4,21 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import PersonalInfo from "@/components/steps/PersonalInfo";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
-import { initializeForm, nextStep, resetForm } from "@/redux/slices/formSlice";
+import {
+  nextStep,
+  prevStep,
+  resetForm,
+  updateSlugAction,
+} from "@/redux/slices/formSlice";
 import CareerSummary from "@/components/steps/CareerSummary";
-import { ArrowRight } from "lucide-react";
-import { useEffect } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import SkillExperience from "@/components/steps/SkillExperience";
 import EduCertificate from "@/components/steps/edu-certificate/EduCertificate";
 import ContactInfo from "@/components/steps/ContactInfo";
 import AiStep from "@/components/steps/AiStep";
+import usePreserveData from "@/hooks/usePreserveData";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
 const steps = [
   { id: 1, number: "01", title: "Personal Information" },
@@ -24,12 +31,17 @@ const steps = [
 ];
 
 const MultiStepForm = () => {
+  usePreserveData("formState");
+  const params = useParams();
+  const slug = params.slug;
   const dispatch = useAppDispatch();
   const { step, data } = useAppSelector((state) => state.form);
 
   useEffect(() => {
-    dispatch(initializeForm());
-  }, [dispatch]);
+    if (slug) {
+      dispatch(updateSlugAction(String(slug)));
+    }
+  }, [slug, dispatch]);
 
   const handleSubmit = () => {
     console.log("Submitted Data:", data);
@@ -105,18 +117,34 @@ const MultiStepForm = () => {
 
           <div className="pt-8 md:pt-12">
             {step < 6 ? (
-              <Button
-                onClick={() => dispatch(nextStep())}
-                className="w-full h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] transition-colors">
-                Next
-                <ArrowRight className="w-6 h-6" />
-              </Button>
+              <div className="flex items-center justify-between">
+                <Button
+                  onClick={() => dispatch(prevStep())}
+                  className="w-[200px] h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] transition-colors">
+                  <ArrowLeft className="w-6 h-6" />
+                  Previous
+                </Button>
+                <Button
+                  onClick={() => dispatch(nextStep())}
+                  className="w-[200px] h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] transition-colors">
+                  Next
+                  <ArrowRight className="w-6 h-6" />
+                </Button>
+              </div>
             ) : (
-              <button
-                onClick={handleSubmit}
-                className="w-full h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] cursor-pointer transition-colors">
-                Generate Resume
-              </button>
+              <div className="flex items-center justify-between">
+                <Button
+                  onClick={() => dispatch(prevStep())}
+                  className="w-[200px] h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] transition-colors">
+                  <ArrowLeft className="w-6 h-6" />
+                  Previous
+                </Button>
+                <Button
+                  onClick={handleSubmit}
+                  className="w-[200px] h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] transition-colors">
+                  Generate Resume
+                </Button>
+              </div>
             )}
           </div>
         </div>
