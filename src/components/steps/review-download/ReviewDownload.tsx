@@ -38,7 +38,7 @@ const ReviewDownload = () => {
 
   const educationArray = education_and_certifications?.education || [];
   const certificationArray = education_and_certifications?.certifications || [];
-  const skillAndExperienceArray = skill_and_experience || [];
+  const SkillAndExperienceTypeArray = skill_and_experience || [];
 
   const fullAddress = [address, city, state, zip_code, country]
     .filter(Boolean)
@@ -149,14 +149,14 @@ const ReviewDownload = () => {
             )}
 
             {/* Experience */}
-            {skillAndExperienceArray.length > 0 && (
+            {SkillAndExperienceTypeArray.length > 0 && (
               <section>
                 <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-800 border-b border-slate-200 pb-1 mb-5">
                   <Briefcase className="w-5 h-5 text-slate-600" />
                   Professional Experience
                 </h2>
                 <div className="space-y-6">
-                  {skillAndExperienceArray.map((item, i) => (
+                  {SkillAndExperienceTypeArray.map((item, i) => (
                     <div key={i} className="space-y-2">
                       <div className="flex flex-col sm:flex-row sm:justify-between">
                         <div>

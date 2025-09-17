@@ -11,7 +11,7 @@ import {
   updateSkillExperienceForm,
   updateWorkExperienceDate,
 } from "@/redux/slices/formSlice";
-import { SkillAndExperience } from "@/types/formTypes";
+import { SkillAndExperienceType } from "@/types/formTypes";
 import { useRef, useState } from "react";
 import {
   Popover,
@@ -34,7 +34,7 @@ const SkillExperience = () => {
 
   const handleChange = (
     id: number,
-    field: keyof SkillAndExperience,
+    field: keyof SkillAndExperienceType,
     value: string | string[]
   ) => {
     dispatch(updateSkillExperienceForm({ id, field, value }));

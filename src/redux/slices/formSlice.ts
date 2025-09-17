@@ -1,6 +1,6 @@
 import {
   FormStructure,
-  SkillAndExperience,
+  SkillAndExperienceType,
   Education,
 } from "@/types/formTypes";
 import { initialFormData, randomId } from "@/utils/initialForm";
@@ -59,7 +59,7 @@ const formSlice = createSlice({
         state.data.skill_and_experience = [];
       }
 
-      const newExperience: SkillAndExperience = {
+      const newExperience: SkillAndExperienceType = {
         id: randomId(),
         job_title: "",
         start_date: "",
@@ -74,13 +74,10 @@ const formSlice = createSlice({
     },
 
     addNewEducation: (state) => {
-      if (!state.data.education_and_certifications) {
-        state.data.education_and_certifications = {
-          education: [],
-          certifications: [],
-        };
+      if (!state.data.education) {
+        state.data.education = [];
       }
-      state.data.education_and_certifications.education.push({
+      state.data.education.push({
         id: randomId(),
         degree: "",
         institution_name: "",
@@ -92,13 +89,10 @@ const formSlice = createSlice({
     },
 
     addNewCertificate: (state) => {
-      if (!state.data.education_and_certifications) {
-        state.data.education_and_certifications = {
-          education: [],
-          certifications: [],
-        };
+      if (!state.data.certifications) {
+        state.data.certifications = [];
       }
-      state.data.education_and_certifications.certifications.push({
+      state.data.certifications.push({
         id: randomId(),
         certification_title: "",
         issuing_organization: "",
@@ -117,20 +111,18 @@ const formSlice = createSlice({
     },
 
     deleteEducationAction: (state, action) => {
-      if (state.data.education_and_certifications?.education) {
-        state.data.education_and_certifications.education =
-          state.data.education_and_certifications.education.filter(
-            (edu) => edu.id !== action.payload.id
-          );
+      if (state.data?.education) {
+        state.data.education = state.data.education.filter(
+          (edu) => edu.id !== action.payload.id
+        );
       }
     },
 
     deleteCertificateAction: (state, action) => {
-      if (state.data.education_and_certifications?.certifications) {
-        state.data.education_and_certifications.certifications =
-          state.data.education_and_certifications.certifications.filter(
-            (cert) => cert.id !== action.payload.id
-          );
+      if (state.data?.certifications) {
+        state.data.certifications = state.data.certifications.filter(
+          (cert) => cert.id !== action.payload.id
+        );
       }
     },
 
@@ -142,7 +134,7 @@ const formSlice = createSlice({
         value: string;
       }>
     ) => {
-      const educationList = state.data.education_and_certifications?.education;
+      const educationList = state.data?.education;
       if (!educationList) return;
 
       const edu = educationList.find((e) => e.id === action.payload.id);
@@ -163,7 +155,7 @@ const formSlice = createSlice({
         value: string;
       }>
     ) => {
-      const certList = state.data.education_and_certifications?.certifications;
+      const certList = state.data?.certifications;
       if (!certList) return;
 
       const cert = certList.find((c) => c.id === action.payload.id);
@@ -176,7 +168,7 @@ const formSlice = createSlice({
       state,
       action: PayloadAction<{
         id: number;
-        field: keyof SkillAndExperience;
+        field: keyof SkillAndExperienceType;
         value: string | string[];
       }>
     ) => {
@@ -237,11 +229,9 @@ const formSlice = createSlice({
       }>
     ) => {
       const { id, field, value } = action.payload;
-      if (!state.data.education_and_certifications) return;
+      if (!state.data.education) return;
 
-      const education = state.data.education_and_certifications.education.find(
-        (edu) => edu.id === id
-      );
+      const education = state.data.education.find((edu) => edu.id === id);
       if (education) {
         education[field] = value;
       }
@@ -256,12 +246,11 @@ const formSlice = createSlice({
       }>
     ) => {
       const { id, field, value } = action.payload;
-      if (!state.data.education_and_certifications) return;
+      if (!state.data.certifications) return;
 
-      const certification =
-        state.data.education_and_certifications.certifications.find(
-          (cert) => cert.id === id
-        );
+      const certification = state.data.certifications.find(
+        (cert) => cert.id === id
+      );
       if (certification) {
         certification[field] = value;
       }
