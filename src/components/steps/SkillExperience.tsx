@@ -79,7 +79,7 @@ const SkillExperience = () => {
             </h1>
             <button
               onClick={() => dispatch(nextStep())}
-              className="bg-[#F5F5F5] py-2 px-5 gap-3 text-[#101010] font-medium text-xl rounded-[8px] flex items-center hover:bg-gray-200 cursor-pointer transition-colors">
+              className="bg-[#F5F5F5] sm:py-2 py-1.5 sm:px-5 px-3 gap-1 sm:gap-3 text-[#101010] font-medium text-base sm:text-xl rounded-[8px] flex items-center hover:bg-gray-200 cursor-pointer transition-colors">
               Skip <ChevronRight />
             </button>
           </div>
