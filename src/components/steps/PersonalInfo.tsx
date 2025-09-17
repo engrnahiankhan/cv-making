@@ -22,7 +22,7 @@ const PersonalInfo = () => {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-2 sm:space-y-4">
+      <div className="space-y-4">
         <h1 className="text-3xl sm:text-5xl font-semibold text-main">
           Tell Us About Yourself
         </h1>
