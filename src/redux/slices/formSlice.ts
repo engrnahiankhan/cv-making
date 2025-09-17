@@ -3,7 +3,7 @@ import {
   SkillAndExperience,
   Education,
 } from "@/types/formTypes";
-import { initialFormData } from "@/utils/initialForm";
+import { initialFormData, randomId } from "@/utils/initialForm";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface FormState {
@@ -60,7 +60,7 @@ const formSlice = createSlice({
       }
 
       const newExperience: SkillAndExperience = {
-        id: Date.now() + Math.random(),
+        id: randomId(),
         job_title: "",
         start_date: "",
         end_date: "",
@@ -81,7 +81,7 @@ const formSlice = createSlice({
         };
       }
       state.data.education_and_certifications.education.push({
-        id: Date.now() + Math.random(),
+        id: randomId(),
         degree: "",
         institution_name: "",
         major: "",
@@ -99,12 +99,39 @@ const formSlice = createSlice({
         };
       }
       state.data.education_and_certifications.certifications.push({
-        id: Date.now() + Math.random(),
+        id: randomId(),
         certification_title: "",
         issuing_organization: "",
         issue_date: "",
         expiration_date: "",
       });
+    },
+
+    deleteWorkExperienceAction: (state, action) => {
+      if (state.data.skill_and_experience) {
+        state.data.skill_and_experience =
+          state.data.skill_and_experience.filter(
+            (exp) => exp.id !== action.payload.id
+          );
+      }
+    },
+
+    deleteEducationAction: (state, action) => {
+      if (state.data.education_and_certifications?.education) {
+        state.data.education_and_certifications.education =
+          state.data.education_and_certifications.education.filter(
+            (edu) => edu.id !== action.payload.id
+          );
+      }
+    },
+
+    deleteCertificateAction: (state, action) => {
+      if (state.data.education_and_certifications?.certifications) {
+        state.data.education_and_certifications.certifications =
+          state.data.education_and_certifications.certifications.filter(
+            (cert) => cert.id !== action.payload.id
+          );
+      }
     },
 
     updateEducationForm: (
@@ -268,6 +295,9 @@ export const {
   updateEducationDate,
   updateCertificationDate,
   toggleEducationAndCertificationsAction,
+  deleteWorkExperienceAction,
+  deleteCertificateAction,
+  deleteEducationAction,
 } = formSlice.actions;
 
 export default formSlice.reducer;
