@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import {
   addNewWorkExperience,
+  nextStep,
   updateSkillExperienceForm,
   updateWorkExperienceDate,
 } from "@/redux/slices/formSlice";
@@ -76,7 +77,9 @@ const SkillExperience = () => {
             <h1 className="text-3xl sm:text-5xl font-semibold text-main">
               Your Work Experience & Skills
             </h1>
-            <button className="bg-[#F5F5F5] py-2 px-5 gap-3 text-[#101010] font-medium text-xl rounded-[8px] flex items-center hover:bg-gray-200 cursor-pointer transition-colors">
+            <button
+              onClick={() => dispatch(nextStep())}
+              className="bg-[#F5F5F5] py-2 px-5 gap-3 text-[#101010] font-medium text-xl rounded-[8px] flex items-center hover:bg-gray-200 cursor-pointer transition-colors">
               Skip <ChevronRight />
             </button>
           </div>
