@@ -1,7 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "./reduxHooks";
 import { setItem } from "@/utils/localStorage";
-import { initializeForm, stateUpdateAction } from "@/redux/slices/formSlice";
+import {
+  initializeFormData,
+  stateUpdateAction,
+} from "@/redux/slices/formSlice";
 import { loadFromLocalStorage } from "@/redux/actions/localStorageAction";
 import { initialFormData } from "@/utils/initialForm";
 
@@ -17,7 +20,7 @@ const usePreserveData = (key: string) => {
     const localData = loadFromLocalStorage();
 
     if (!localData || Object.keys(localData).length === 0) {
-      dispatch(initializeForm());
+      dispatch(initializeFormData());
 
       const initialData = {
         step: 1,

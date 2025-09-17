@@ -20,11 +20,11 @@ export default function Home() {
   useEffect(() => {
     const localData = loadFromLocalStorage();
     if (
-      localData &&
-      Object.keys(localData.data).length > 0 &&
-      localData.data.slug
+      localData?.formData &&
+      Object.keys(localData.formData).length > 0 &&
+      localData.formData.slug
     ) {
-      router.push(`/create-cv/${localData.data.slug}`);
+      router.push(`/create-cv/${localData.formData.slug}`);
     } else {
       setLoading(false);
     }

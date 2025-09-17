@@ -3,12 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import PersonalInfo from "@/components/steps/PersonalInfo";
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
-import {
-  nextStepAction,
-  prevStepAction,
-  updateSlugAction,
-} from "@/redux/slices/formSlice";
+import { updateSlugAction } from "@/redux/slices/formSlice";
 import CareerSummary from "@/components/steps/CareerSummary";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import SkillExperience from "@/components/steps/SkillExperience";
@@ -19,6 +14,8 @@ import usePreserveData from "@/hooks/usePreserveData";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import ReviewDownload from "@/components/steps/review-download/ReviewDownload";
+import { useFormActions } from "@/hooks/useFormAction";
+import { useAppDispatch } from "@/hooks/reduxHooks";
 
 const steps = [
   { id: 1, number: "01", title: "Personal Information" },
@@ -32,11 +29,13 @@ const steps = [
 
 const MultiStepForm = () => {
   usePreserveData("formState");
+  const dispatch = useAppDispatch();
   const params = useParams();
   const slug = params.slug;
-  const dispatch = useAppDispatch();
-  const formData = useAppSelector((state) => state.form.formData);
-  const currentStep = useAppSelector((state) => state.form.currentStep);
+
+  const { formState, nextStep, prevStep } = useFormActions();
+  const formData = formState.formData;
+  const currentStep = formState.currentStep;
 
   useEffect(() => {
     if (slug) {
@@ -46,7 +45,7 @@ const MultiStepForm = () => {
 
   const handleSubmit = () => {
     console.log("Submitted Data:", formData);
-    dispatch(nextStepAction());
+    nextStep();
     // alert("Check console for submitted data");
     // dispatch(resetFormDataAction());
   };
@@ -123,19 +122,19 @@ const MultiStepForm = () => {
               <div className="flex items-center justify-between">
                 <Button
                   size="res"
-                  onClick={() => dispatch(prevStepAction())}
+                  onClick={() => prevStep()}
                   disabled={currentStep === 1}>
                   <ArrowLeft className="w-6 h-6" />
                   Previous
                 </Button>
-                <Button size="res" onClick={() => dispatch(nextStepAction())}>
+                <Button size="res" onClick={() => nextStep()}>
                   Next
                   <ArrowRight className="w-6 h-6" />
                 </Button>
               </div>
             ) : (
               <div className="flex items-center justify-between">
-                <Button size="res" onClick={() => dispatch(prevStepAction())}>
+                <Button size="res" onClick={() => prevStep()}>
                   <ArrowLeft className="w-6 h-6" />
                   Previous
                 </Button>

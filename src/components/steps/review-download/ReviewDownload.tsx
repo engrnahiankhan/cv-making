@@ -1,64 +1,28 @@
 "use client";
 
-import { useAppSelector } from "@/hooks/reduxHooks";
-import { Badge } from "@/components/ui/badge";
+import { useRef } from "react";
+import { useFormActions } from "@/hooks/useFormAction";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  User,
-  Briefcase,
-  GraduationCap,
-  Award,
-  Download,
-  Printer as Print,
-  Globe,
-  Linkedin,
-} from "lucide-react";
+import { Printer, Download } from "lucide-react";
+import { useReactToPrint } from "react-to-print";
 
 const ReviewDownload = () => {
-  const data = useAppSelector((state) => state.form.data);
-  const {
-    address,
-    city,
-    contact_information,
-    country,
-    education_and_certifications,
-    email,
-    first_name,
-    job_description,
-    job_title,
-    last_name,
-    phone_number,
-    skill_and_experience,
-    state,
-    zip_code,
-  } = data;
+  const { formState } = useFormActions();
+  const printRef = useRef<HTMLDivElement>(null);
 
-  const educationArray = education_and_certifications?.education || [];
-  const certificationArray = education_and_certifications?.certifications || [];
-  const SkillAndExperienceTypeArray = skill_and_experience || [];
+  // Print / Download handler
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: `${formState.formData.personal_information.first_name.value}_CV`,
+  });
 
-  const fullAddress = [address, city, state, zip_code, country]
-    .filter(Boolean)
-    .join(", ");
-
-  const handleDownload = () => {
-    const printContent = document.getElementById("cv-content");
-    const originalContent = document.body.innerHTML;
-
-    if (printContent) {
-      document.body.innerHTML = printContent.innerHTML;
-      window.print();
-      document.body.innerHTML = originalContent;
-      window.location.reload();
-    }
-  };
-
-  const handlePrint = () => {
-    window.print();
-  };
+  const personalInfo = formState.formData.personal_information;
+  const contactInfo = formState.formData.contact_information;
+  const educationList = formState.formData.education;
+  const certificationList = formState.formData.certifications;
+  const skillAndExperienceList = formState.formData.skill_and_experience;
+  const careerSummary = formState.formData.career_summary;
 
   const formatDateRange = (startDate: string, endDate: string) => {
     const formatDate = (date: string) =>
@@ -75,210 +39,180 @@ const ReviewDownload = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8 px-4 print:bg-white print:py-0 print:px-0">
-      <div className="max-w-5xl mx-auto space-y-8" id="cv-content">
-        {/* Action Buttons */}
-        <div className="flex justify-end space-x-4 print:hidden">
-          <Button
-            onClick={handlePrint}
-            variant="outline"
-            size="sm"
-            className="hover:bg-slate-100">
-            <Print className="w-4 h-4 mr-2" />
-            Print
-          </Button>
-          <Button
-            onClick={handleDownload}
-            size="sm"
-            className="bg-slate-900 hover:bg-slate-800">
-            <Download className="w-4 h-4 mr-2" />
-            Download PDF
-          </Button>
+    <div className="space-y-4">
+      {/* Buttons */}
+      <div className="flex justify-end gap-2">
+        <Button onClick={handlePrint} variant="outline" size="sm">
+          <Printer className="mr-2 w-4 h-4" /> Print
+        </Button>
+        <Button onClick={handlePrint} variant="outline" size="sm">
+          <Download className="mr-2 w-4 h-4" /> Download
+        </Button>
+      </div>
+
+      {/* CV Content */}
+      <div
+        ref={printRef}
+        className="max-w-4xl mx-auto bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg text-gray-900 dark:text-white">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold">
+            {personalInfo.first_name.value} {personalInfo.last_name.value}
+          </h1>
+          {careerSummary.job_title.value && (
+            <p className="text-lg text-gray-500 dark:text-gray-400 mt-1">
+              {careerSummary.job_title.value}
+            </p>
+          )}
         </div>
 
-        {/* Header */}
-        <div className="border-b-2 border-slate-200 pb-6">
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900">
-            {first_name && last_name
-              ? `${first_name} ${last_name}`
-              : "Your Name"}
-          </h1>
-          {job_title && (
-            <p className="text-xl text-slate-600 mt-1">{job_title}</p>
-          )}
-          <div className="flex flex-wrap gap-6 mt-4 text-sm text-slate-700">
-            {email && (
-              <div className="flex items-center space-x-2">
-                <Mail className="w-4 h-4 text-slate-500" />
-                <a href={`mailto:${email}`} className="hover:underline">
-                  {email}
-                </a>
-              </div>
-            )}
-            {phone_number && (
-              <div className="flex items-center space-x-2">
-                <Phone className="w-4 h-4 text-slate-500" />
-                <a href={`tel:${phone_number}`} className="hover:underline">
-                  {phone_number}
-                </a>
-              </div>
-            )}
-            {fullAddress && (
-              <div className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4 text-slate-500" />
-                <span>{fullAddress}</span>
-              </div>
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Panel */}
+          <div className="lg:w-1/3 space-y-6">
+            {/* Contact Info */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Contact</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-1 text-sm">
+                {personalInfo.email.value && (
+                  <p>Email: {personalInfo.email.value}</p>
+                )}
+                {personalInfo.phone_number.value && (
+                  <p>Phone: {personalInfo.phone_number.value}</p>
+                )}
+                {(personalInfo.address.value ||
+                  personalInfo.city.value ||
+                  personalInfo.country.value) && (
+                  <p>
+                    Address: {personalInfo.address.value},{" "}
+                    {personalInfo.city.value}, {personalInfo.country.value}
+                  </p>
+                )}
+                {contactInfo.linkedin_profile.value && (
+                  <p>LinkedIn: {contactInfo.linkedin_profile.value}</p>
+                )}
+                {contactInfo.portfolio_website.value && (
+                  <p>Portfolio: {contactInfo.portfolio_website.value}</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Skills */}
+            {skillAndExperienceList.some(
+              (exp) => exp.skill.value.length > 0
+            ) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Skills</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm">
+                  {Array.from(
+                    new Set(
+                      skillAndExperienceList.flatMap((exp) => exp.skill.value)
+                    )
+                  ).join(", ")}
+                </CardContent>
+              </Card>
             )}
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Summary */}
-            {job_description && (
-              <section>
-                <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-800 border-b border-slate-200 pb-1 mb-3">
-                  <User className="w-5 h-5 text-slate-600" />
-                  Profile
-                </h2>
-                <p className="text-slate-700 leading-relaxed text-justify">
-                  {job_description}
-                </p>
-              </section>
+          {/* Right Panel */}
+          <div className="lg:w-2/3 space-y-6">
+            {/* Career Summary */}
+            {careerSummary.job_description.value && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Career Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-gray-700 dark:text-gray-300">
+                  {careerSummary.job_description.value}
+                </CardContent>
+              </Card>
             )}
 
             {/* Experience */}
-            {SkillAndExperienceTypeArray.length > 0 && (
-              <section>
-                <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-800 border-b border-slate-200 pb-1 mb-5">
-                  <Briefcase className="w-5 h-5 text-slate-600" />
-                  Professional Experience
-                </h2>
-                <div className="space-y-6">
-                  {SkillAndExperienceTypeArray.map((item, i) => (
-                    <div key={i} className="space-y-2">
-                      <div className="flex flex-col sm:flex-row sm:justify-between">
-                        <div>
-                          <h3 className="font-semibold text-slate-900 text-base">
-                            {item.job_title || "Position Title"}
-                          </h3>
-                          {item.company_name && (
-                            <p className="text-slate-600">
-                              {item.company_name}
-                            </p>
-                          )}
-                        </div>
-                        {(item.start_date || item.end_date) && (
-                          <span className="text-sm text-slate-500">
-                            {formatDateRange(item.start_date, item.end_date)}
-                          </span>
+            {skillAndExperienceList.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Experience</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 text-sm">
+                  {skillAndExperienceList.map((exp) => (
+                    <div key={exp.id}>
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        {exp.job_title.value} @ {exp.company_name.value}
+                      </p>
+                      <p className="text-gray-500 text-sm">
+                        {formatDateRange(
+                          exp.start_date.value,
+                          exp.end_date.value
                         )}
-                      </div>
-                      {item.job_description && (
-                        <p className="text-slate-700 text-sm leading-relaxed">
-                          {item.job_description}
-                        </p>
+                      </p>
+                      {exp.job_description.value && (
+                        <p>{exp.job_description.value}</p>
                       )}
-                      {item.skill?.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-1">
-                          {item.skill.map((skill, idx) => (
-                            <Badge
-                              key={idx}
-                              variant="secondary"
-                              className="text-xs bg-slate-100 text-slate-700">
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
+                      {exp.achievements.value && (
+                        <p className="text-gray-600">
+                          Achievements: {exp.achievements.value}
+                        </p>
                       )}
                     </div>
                   ))}
-                </div>
-              </section>
-            )}
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-8 text-sm">
-            {/* Links */}
-            {contact_information && (
-              <section>
-                <h2 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-1 mb-3">
-                  Links
-                </h2>
-                <div className="space-y-2">
-                  {contact_information.linkedin_profile && (
-                    <a
-                      href={contact_information.linkedin_profile}
-                      target="_blank"
-                      className="flex items-center gap-2 text-blue-600 hover:underline">
-                      <Linkedin className="w-4 h-4" />
-                      LinkedIn
-                    </a>
-                  )}
-                  {contact_information.portfolio_website && (
-                    <a
-                      href={contact_information.portfolio_website}
-                      target="_blank"
-                      className="flex items-center gap-2 text-blue-600 hover:underline">
-                      <Globe className="w-4 h-4" />
-                      Portfolio
-                    </a>
-                  )}
-                </div>
-              </section>
+                </CardContent>
+              </Card>
             )}
 
             {/* Education */}
-            {educationArray.length > 0 && (
-              <section>
-                <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-800 border-b border-slate-200 pb-1 mb-3">
-                  <GraduationCap className="w-5 h-5 text-slate-600" />
-                  Education
-                </h2>
-                <div className="space-y-4">
-                  {educationArray.map((edu, i) => (
-                    <div key={i}>
-                      <p className="font-medium text-slate-900">
-                        {edu.degree || "Degree"}
+            {educationList.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Education</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 text-sm">
+                  {educationList.map((edu) => (
+                    <div key={edu.id}>
+                      <p className="font-semibold">
+                        {edu.degree.value} in {edu.major.value}
                       </p>
-                      {edu.institution_name && (
-                        <p className="text-slate-600">{edu.institution_name}</p>
-                      )}
-                      {(edu.start_date || edu.end_date) && (
-                        <p className="text-slate-500 text-xs">
-                          {formatDateRange(edu.start_date, edu.end_date)}
-                        </p>
+                      <p>{edu.institution_name.value}</p>
+                      <p className="text-gray-500">
+                        {formatDateRange(
+                          edu.start_date.value,
+                          edu.end_date.value
+                        )}
+                      </p>
+                      {edu.achievements.value && (
+                        <p>Achievements: {edu.achievements.value}</p>
                       )}
                     </div>
                   ))}
-                </div>
-              </section>
+                </CardContent>
+              </Card>
             )}
 
             {/* Certifications */}
-            {certificationArray.length > 0 && (
-              <section>
-                <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-800 border-b border-slate-200 pb-1 mb-3">
-                  <Award className="w-5 h-5 text-slate-600" />
-                  Certifications
-                </h2>
-                <div className="space-y-3">
-                  {certificationArray.map((cert, i) => (
-                    <div key={i}>
-                      <p className="font-medium text-slate-900">
-                        {cert.certification_title || "Certification"}
+            {certificationList.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Certifications</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  {certificationList.map((cert) => (
+                    <div key={cert.id}>
+                      <p className="font-medium">
+                        {cert.certification_title.value}
                       </p>
-                      {cert.issuing_organization && (
-                        <p className="text-slate-600 text-sm">
-                          {cert.issuing_organization}
-                        </p>
-                      )}
+                      <p>{cert.issuing_organization.value}</p>
+                      <p className="text-gray-500">
+                        Issued: {cert.issue_date.value}{" "}
+                        {cert.expiration_date.value &&
+                          `- Expires: ${cert.expiration_date.value}`}
+                      </p>
                     </div>
                   ))}
-                </div>
-              </section>
+                </CardContent>
+              </Card>
             )}
           </div>
         </div>

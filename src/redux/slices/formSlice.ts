@@ -1,4 +1,3 @@
-// formSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   CommonFieldType,
@@ -15,7 +14,7 @@ import {
   education,
   initialFormData,
   skillAndExperience,
-} from "@/utils/initialForm"; // <-- adjust path if needed
+} from "@/utils/initialForm";
 
 // helper type: partial updates for nested CommonFieldType fields
 type PartialFieldUpdates<T> = {
@@ -23,16 +22,18 @@ type PartialFieldUpdates<T> = {
 };
 
 // slice state
-interface FormState {
+export interface FormState {
   currentStep: number;
   formData: FormStructureType;
+  toggleEducationAndCertifications: "education" | "certificate";
 }
 
-const MAX_STEP = 6;
+const MAX_STEP = 7;
 
 const initialState: FormState = {
   currentStep: 1,
   formData: initialFormData(),
+  toggleEducationAndCertifications: "education",
 };
 
 /* ------------------ Type guards & validators ------------------ */
@@ -217,6 +218,15 @@ const formSlice = createSlice({
   name: "form",
   initialState,
   reducers: {
+    /* ---------- InitializeFormData and State update action ---------- */
+    initializeFormData: (state) => {
+      state.formData = initialFormData();
+    },
+
+    stateUpdateAction(state, action: PayloadAction<Partial<FormState>>) {
+      Object.assign(state, action.payload);
+    },
+
     /* ---------- update top-level field groups (partial updates allowed) ---------- */
     updatePersonalInfoAction(
       state,
@@ -391,6 +401,8 @@ const formSlice = createSlice({
     },
 
     updateSlugAction(state, action: PayloadAction<string>) {
+      console.log("check slug:", action.payload);
+
       state.formData.slug = action.payload;
     },
 
@@ -405,6 +417,14 @@ const formSlice = createSlice({
 
     addCertificationAction(state) {
       state.formData.certifications.push(certification());
+    },
+
+    /* ---------- Toggle Update Education and Certificate ---------- */
+    updateToggleAction: (
+      state,
+      action: PayloadAction<"education" | "certificate">
+    ) => {
+      state.toggleEducationAndCertifications = action.payload;
     },
   },
 });
@@ -426,6 +446,9 @@ export const {
   addSkillExperienceAction,
   addEducationAction,
   addCertificationAction,
+  updateToggleAction,
+  initializeFormData,
+  stateUpdateAction,
 } = formSlice.actions;
 
 export default formSlice.reducer;

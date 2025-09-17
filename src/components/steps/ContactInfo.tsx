@@ -9,21 +9,13 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { updateContactInformation } from "@/redux/slices/formSlice";
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { useFormActions } from "@/hooks/useFormAction";
 
 const otherSocialMedias = ["Facebook", "Twitter", "Instagram", "GitHub"];
 
 const ContactInfo = () => {
-  const dispatch = useAppDispatch();
-  const { data } = useAppSelector((state) => state.form);
-
-  const handleChange = (
-    field: keyof NonNullable<typeof data.contact_information>,
-    value: string
-  ) => {
-    dispatch(updateContactInformation({ field, value }));
-  };
+  const { formState, updateContactInfo } = useFormActions();
+  const data = formState.formData.contact_information;
 
   return (
     <div className="space-y-8">
@@ -43,8 +35,10 @@ const ContactInfo = () => {
           <Label htmlFor="linkedin-profile">LinkedIn Profile</Label>
           <Input
             id="linkedin-profile"
-            value={data.contact_information?.linkedin_profile || ""}
-            onChange={(e) => handleChange("linkedin_profile", e.target.value)}
+            value={data?.linkedin_profile.value || ""}
+            onChange={(e) =>
+              updateContactInfo("linkedin_profile", e.target.value)
+            }
             placeholder="https://linkedin.com/in/username"
           />
         </div>
@@ -54,8 +48,10 @@ const ContactInfo = () => {
           <Label htmlFor="PersonalPortfolio">Personal Website/Portfolio</Label>
           <Input
             id="PersonalPortfolio"
-            value={data.contact_information?.portfolio_website || ""}
-            onChange={(e) => handleChange("portfolio_website", e.target.value)}
+            value={data?.portfolio_website.value || ""}
+            onChange={(e) =>
+              updateContactInfo("portfolio_website", e.target.value)
+            }
             placeholder="https://myportfolio.com"
           />
         </div>
@@ -65,9 +61,9 @@ const ContactInfo = () => {
           <div className="space-y-1 md:col-span-1">
             <Label htmlFor="OtherSocialMedia">Other Social Media</Label>
             <Select
-              value={data.contact_information?.other_social_media || ""}
+              value={data?.other_social_media.value || ""}
               onValueChange={(value) =>
-                handleChange("other_social_media", value)
+                updateContactInfo("other_social_media", value)
               }>
               <SelectTrigger className="!h-[64px] border-gray-300 focus:border-gray-400 focus:ring-0 w-full">
                 <SelectValue placeholder="Select a social media" />
@@ -88,9 +84,9 @@ const ContactInfo = () => {
             </Label>
             <Input
               id="OtherSocialMediaLink"
-              value={data.contact_information?.other_social_media_links || ""}
+              value={data?.other_social_media_links.value || ""}
               onChange={(e) =>
-                handleChange("other_social_media_links", e.target.value)
+                updateContactInfo("other_social_media_links", e.target.value)
               }
               placeholder="https://facebook.com/username"
             />

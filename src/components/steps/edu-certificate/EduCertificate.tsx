@@ -1,14 +1,11 @@
-import { useAppSelector } from "@/hooks/reduxHooks";
+import { useFormActions } from "@/hooks/useFormAction";
 import Certifications from "./Certifications";
 import Education from "./Education";
 
 const EduCertificate = () => {
-  const currentToggle = useAppSelector(
-    (state) => state.form.toggleEducationAndCertifications
-  );
-  return (
-    <>{currentToggle === "education" ? <Education /> : <Certifications />}</>
-  );
+  const { formState } = useFormActions();
+  const toggle = formState.toggleEducationAndCertifications;
+  return <>{toggle === "education" ? <Education /> : <Certifications />}</>;
 };
 
 export default EduCertificate;
