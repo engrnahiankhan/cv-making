@@ -19,6 +19,7 @@ import AiStep from "@/components/steps/AiStep";
 import usePreserveData from "@/hooks/usePreserveData";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
+import ReviewDownload from "@/components/steps/review-download/ReviewDownload";
 
 const steps = [
   { id: 1, number: "01", title: "Personal Information" },
@@ -45,8 +46,9 @@ const MultiStepForm = () => {
 
   const handleSubmit = () => {
     console.log("Submitted Data:", data);
-    alert("Check console for submitted data");
-    dispatch(resetForm());
+    dispatch(nextStep());
+    // alert("Check console for submitted data");
+    // dispatch(resetForm());
   };
 
   return (
@@ -114,6 +116,7 @@ const MultiStepForm = () => {
           {step === 4 && <EduCertificate />}
           {step === 5 && <ContactInfo />}
           {step === 6 && <AiStep />}
+          {step === 7 && <ReviewDownload />}
 
           <div className="pt-8 md:pt-12">
             {step < 6 ? (
