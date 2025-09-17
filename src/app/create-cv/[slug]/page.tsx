@@ -5,9 +5,8 @@ import { cn } from "@/lib/utils";
 import PersonalInfo from "@/components/steps/PersonalInfo";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import {
-  nextStep,
-  prevStep,
-  resetForm,
+  nextStepAction,
+  prevStepAction,
   updateSlugAction,
 } from "@/redux/slices/formSlice";
 import CareerSummary from "@/components/steps/CareerSummary";
@@ -36,7 +35,8 @@ const MultiStepForm = () => {
   const params = useParams();
   const slug = params.slug;
   const dispatch = useAppDispatch();
-  const { step, data } = useAppSelector((state) => state.form);
+  const formData = useAppSelector((state) => state.form.formData);
+  const currentStep = useAppSelector((state) => state.form.currentStep);
 
   useEffect(() => {
     if (slug) {
@@ -45,10 +45,10 @@ const MultiStepForm = () => {
   }, [slug, dispatch]);
 
   const handleSubmit = () => {
-    console.log("Submitted Data:", data);
-    dispatch(nextStep());
+    console.log("Submitted Data:", formData);
+    dispatch(nextStepAction());
     // alert("Check console for submitted data");
-    // dispatch(resetForm());
+    // dispatch(resetFormDataAction());
   };
 
   return (
@@ -67,9 +67,9 @@ const MultiStepForm = () => {
               style={{
                 left: "24px",
                 width:
-                  step > 1
+                  currentStep > 1
                     ? `${
-                        ((step - 1) / (steps.length - 1)) *
+                        ((currentStep - 1) / (steps.length - 1)) *
                         (100 - 48 / steps.length)
                       }%`
                     : "0%",
@@ -78,8 +78,8 @@ const MultiStepForm = () => {
             {/* Step circles */}
             <div className="relative flex justify-between">
               {steps.map((s) => {
-                const isActive = step === s.id;
-                const isCompleted = step > s.id;
+                const isActive = currentStep === s.id;
+                const isCompleted = currentStep > s.id;
 
                 return (
                   <div key={s.id} className="flex flex-col items-center">
@@ -110,32 +110,32 @@ const MultiStepForm = () => {
         </div>
 
         <div className="px-5 sm:px-[60px] lg:px-[120px]">
-          {step === 1 && <PersonalInfo />}
-          {step === 2 && <CareerSummary />}
-          {step === 3 && <SkillExperience />}
-          {step === 4 && <EduCertificate />}
-          {step === 5 && <ContactInfo />}
-          {step === 6 && <AiStep />}
-          {step === 7 && <ReviewDownload />}
+          {currentStep === 1 && <PersonalInfo />}
+          {currentStep === 2 && <CareerSummary />}
+          {currentStep === 3 && <SkillExperience />}
+          {currentStep === 4 && <EduCertificate />}
+          {currentStep === 5 && <ContactInfo />}
+          {currentStep === 6 && <AiStep />}
+          {currentStep === 7 && <ReviewDownload />}
 
           <div className="pt-8 md:pt-12">
-            {step < 6 ? (
+            {currentStep < 6 ? (
               <div className="flex items-center justify-between">
                 <Button
                   size="res"
-                  onClick={() => dispatch(prevStep())}
-                  disabled={step === 1}>
+                  onClick={() => dispatch(prevStepAction())}
+                  disabled={currentStep === 1}>
                   <ArrowLeft className="w-6 h-6" />
                   Previous
                 </Button>
-                <Button size="res" onClick={() => dispatch(nextStep())}>
+                <Button size="res" onClick={() => dispatch(nextStepAction())}>
                   Next
                   <ArrowRight className="w-6 h-6" />
                 </Button>
               </div>
             ) : (
               <div className="flex items-center justify-between">
-                <Button size="res" onClick={() => dispatch(prevStep())}>
+                <Button size="res" onClick={() => dispatch(prevStepAction())}>
                   <ArrowLeft className="w-6 h-6" />
                   Previous
                 </Button>
