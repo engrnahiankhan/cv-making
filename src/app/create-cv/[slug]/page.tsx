@@ -40,16 +40,16 @@ const MultiStepForm = () => {
   return (
     <div className="min-h-screen py-16 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-12 sm:mb-16">
+        <div className="mb-9 sm:mb-16">
           <div className="relative">
             {/* Background line */}
             <div
-              className="absolute top-6 h-[5px] bg-[#E8E8E8]"
+              className="absolute top-4 sm:top-6 h-[4px] sm:h-[5px] bg-[#E8E8E8]"
               style={{ left: "24px", right: "24px" }}></div>
 
             {/* Progress line */}
             <div
-              className="absolute top-6 h-[5px] bg-prime transition-all duration-500"
+              className="absolute top-4 sm:top-6 h-[4px] sm:h-[5px] bg-prime transition-all duration-500"
               style={{
                 left: "24px",
                 width:
@@ -71,14 +71,14 @@ const MultiStepForm = () => {
                   <div key={s.id} className="flex flex-col items-center">
                     <div
                       className={cn(
-                        "w-12 h-12 rounded-full flex items-center justify-center text-lg font-medium transition-all duration-300",
+                        "sm:w-12 w-8 sm:h-12 h-8 rounded-full flex items-center justify-center text-sm sm:text-lg font-medium transition-all duration-300",
                         isActive && "bg-prime text-white",
                         isCompleted && "bg-prime text-white",
                         !isActive && !isCompleted && "bg-[#E8E8E8] text-main"
                       )}>
                       {s.number}
                     </div>
-                    <div className="text-center mt-3 max-w-24">
+                    <div className="text-center mt-3 max-w-24 hidden sm:block">
                       <p
                         className={cn(
                           "text-base font-medium leading-[150%]",
