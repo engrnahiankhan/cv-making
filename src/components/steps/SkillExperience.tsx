@@ -69,6 +69,59 @@ const SkillExperience = () => {
     }
   };
 
+  const handleSkip = () => {
+    if (data.skill_and_experience?.length) {
+      data.skill_and_experience.forEach((exp) => {
+        dispatch(
+          updateSkillExperienceForm({
+            id: exp.id,
+            field: "job_title",
+            value: "",
+          })
+        );
+        dispatch(
+          updateSkillExperienceForm({
+            id: exp.id,
+            field: "company_name",
+            value: "",
+          })
+        );
+        dispatch(
+          updateSkillExperienceForm({
+            id: exp.id,
+            field: "start_date",
+            value: "",
+          })
+        );
+        dispatch(
+          updateSkillExperienceForm({
+            id: exp.id,
+            field: "end_date",
+            value: "",
+          })
+        );
+        dispatch(
+          updateSkillExperienceForm({
+            id: exp.id,
+            field: "job_description",
+            value: "",
+          })
+        );
+        dispatch(
+          updateSkillExperienceForm({
+            id: exp.id,
+            field: "achievements",
+            value: "",
+          })
+        );
+        dispatch(
+          updateSkillExperienceForm({ id: exp.id, field: "skill", value: [] })
+        );
+      });
+    }
+    dispatch(nextStep());
+  };
+
   return (
     <>
       <div className="space-y-8">
@@ -78,7 +131,7 @@ const SkillExperience = () => {
               Your Work Experience & Skills
             </h1>
             <button
-              onClick={() => dispatch(nextStep())}
+              onClick={handleSkip}
               className="bg-[#F5F5F5] sm:py-2 py-1.5 sm:px-5 px-3 gap-1 sm:gap-3 text-[#101010] font-medium text-base sm:text-xl rounded-[8px] flex items-center hover:bg-gray-200 cursor-pointer transition-colors">
               Skip <ChevronRight />
             </button>
