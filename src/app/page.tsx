@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { LoaderThree } from "@/components/ui/loader";
 import { loadFromLocalStorage } from "@/redux/actions/localStorageAction";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -36,8 +37,8 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div>
-        <h1>Loading...</h1>
+      <div className="flex items-center justify-center min-h-screen px-4 bg-white">
+        <LoaderThree />
       </div>
     );
   }
