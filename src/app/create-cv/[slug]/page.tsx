@@ -119,28 +119,25 @@ const MultiStepForm = () => {
             {step < 6 ? (
               <div className="flex items-center justify-between">
                 <Button
+                  size="res"
                   onClick={() => dispatch(prevStep())}
-                  disabled={step === 1}
-                  className="w-[200px] h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] transition-colors">
+                  disabled={step === 1}>
                   <ArrowLeft className="w-6 h-6" />
                   Previous
                 </Button>
-                <Button
-                  onClick={() => dispatch(nextStep())}
-                  className="w-[200px] h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] transition-colors">
+                <Button size="res" onClick={() => dispatch(nextStep())}>
                   Next
                   <ArrowRight className="w-6 h-6" />
                 </Button>
               </div>
             ) : (
               <div className="flex items-center justify-between">
-                <Button
-                  onClick={() => dispatch(prevStep())}
-                  className="w-[200px] h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] transition-colors">
+                <Button size="res" onClick={() => dispatch(prevStep())}>
                   <ArrowLeft className="w-6 h-6" />
                   Previous
                 </Button>
                 <Button
+                  size="res"
                   onClick={handleSubmit}
                   className="w-[200px] h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] transition-colors">
                   Generate Resume
