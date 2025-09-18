@@ -9,6 +9,8 @@ import {
 } from "../ui/select";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { useFormActions } from "@/hooks/useFormAction";
+import InputError from "../shared/InputError";
+import StarMark from "../shared/StarMark";
 
 const jobTitles = [
   "Software Engineer",
@@ -53,7 +55,9 @@ const CareerSummary = () => {
 
       <div className="space-y-8">
         <div className="space-y-1">
-          <Label htmlFor="jobTitle">Job Title</Label>
+          <Label htmlFor="jobTitle">
+            Job Title <StarMark />
+          </Label>
           <Select
             value={data.job_title.value || ""}
             onValueChange={(value) => updateCareerSummary("job_title", value)}>
@@ -71,9 +75,12 @@ const CareerSummary = () => {
               </ScrollArea>
             </SelectContent>
           </Select>
+          {data.job_title.error && <InputError text={data.job_title.error} />}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="jobDesc">Job Description</Label>
+          <Label htmlFor="jobDesc">
+            Job Description <StarMark />
+          </Label>
 
           <Textarea
             id="jobDesc"
@@ -84,6 +91,9 @@ const CareerSummary = () => {
             }
             className="h-[224px] resize-none"
           />
+          {data.job_description.error && (
+            <InputError text={data.job_description.error} />
+          )}
         </div>
       </div>
     </div>

@@ -89,7 +89,7 @@ function validateField(field: CommonFieldType<unknown>, key?: string): void {
       // allow + and 7-15 digits
       const phoneRe = /^\+?\d{7,15}$/;
       if (!phoneRe.test(str)) {
-        field.error = "Please enter a valid phone number (7-15 digits)";
+        field.error = "Please enter a valid phone number";
         return;
       }
     }

@@ -10,6 +10,8 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { useFormActions } from "@/hooks/useFormAction";
+import StarMark from "../shared/StarMark";
+import InputError from "../shared/InputError";
 
 const PersonalInfo = () => {
   const { formState, updatePersonalInfo } = useFormActions();
@@ -31,29 +33,39 @@ const PersonalInfo = () => {
         {/* First Name and Last Name */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-1">
-            <Label htmlFor="firstName">First Name</Label>
+            <Label htmlFor="firstName">
+              First Name <StarMark />
+            </Label>
             <Input
               id="firstName"
               value={data.first_name.value || ""}
               onChange={(e) => updatePersonalInfo("first_name", e.target.value)}
               placeholder="John"
             />
+            {data.first_name.error && (
+              <InputError text={data.first_name.error} />
+            )}
           </div>
           <div className="space-y-1">
-            <Label htmlFor="lastName">Last Name</Label>
+            <Label htmlFor="lastName">
+              Last Name <StarMark />
+            </Label>
             <Input
               id="lastName"
               value={data.last_name.value || ""}
               onChange={(e) => updatePersonalInfo("last_name", e.target.value)}
               placeholder="Doe"
             />
+            {data.last_name.error && <InputError text={data.last_name.error} />}
           </div>
         </div>
 
         {/* Phone Number and Email Address */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-1">
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="phone">
+              Phone Number <StarMark />
+            </Label>
             <Input
               id="phone"
               value={data.phone_number.value || ""}
@@ -62,9 +74,14 @@ const PersonalInfo = () => {
               }
               placeholder="+0997808747"
             />
+            {data.phone_number.error && (
+              <InputError text={data.phone_number.error} />
+            )}
           </div>
           <div className="space-y-1">
-            <Label htmlFor="email">Email Address</Label>
+            <Label htmlFor="email">
+              Email Address <StarMark />
+            </Label>
             <Input
               id="email"
               type="email"
@@ -72,6 +89,7 @@ const PersonalInfo = () => {
               onChange={(e) => updatePersonalInfo("email", e.target.value)}
               placeholder="johndoe@gmail.com"
             />
+            {data.email.error && <InputError text={data.email.error} />}
           </div>
         </div>
 

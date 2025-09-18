@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/popover";
 import { CalendarDays, CloudUpload, Plus } from "lucide-react";
 import { useFormActions } from "@/hooks/useFormAction";
+import StarMark from "@/components/shared/StarMark";
+import InputError from "@/components/shared/InputError";
 
 const Education = () => {
   const { formState, updateEducation, addEducation, updateToggle } =
@@ -45,7 +47,9 @@ const Education = () => {
           <div key={exp.id} className="space-y-8">
             {/* Degree */}
             <div className="space-y-1">
-              <Label htmlFor={`degree-${exp.id}`}>Your Degree</Label>
+              <Label htmlFor={`degree-${exp.id}`}>
+                Your Degree <StarMark />
+              </Label>
               <Input
                 id={`degree-${exp.id}`}
                 value={exp.degree.value || ""}
@@ -56,13 +60,14 @@ const Education = () => {
                 }
                 placeholder="Enter your degree"
               />
+              {exp.degree.error && <InputError text={exp.degree.error} />}
             </div>
 
             {/* Institution Name and Major */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
                 <Label htmlFor={`institutionName-${exp.id}`}>
-                  Institution Name
+                  Institution Name <StarMark />
                 </Label>
                 <Input
                   id={`institutionName-${exp.id}`}
@@ -77,6 +82,9 @@ const Education = () => {
                   }
                   placeholder="Enter your institution name"
                 />
+                {exp.institution_name.error && (
+                  <InputError text={exp.institution_name.error} />
+                )}
               </div>
               <div className="space-y-1">
                 <Label htmlFor={`major-${exp.id}`}>Major</Label>
@@ -96,7 +104,7 @@ const Education = () => {
             {/* Graduation Duration */}
             <div className="space-y-1">
               <Label htmlFor={`graduation-duration-${exp.id}`}>
-                Graduation
+                Graduation <StarMark />
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Popover
@@ -104,17 +112,22 @@ const Education = () => {
                   onOpenChange={(isOpen) =>
                     setOpenStartDate(isOpen ? exp.id : null)
                   }>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      id="date"
-                      className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
-                      {exp.start_date.value
-                        ? new Date(exp.start_date.value).toLocaleDateString()
-                        : "Start date"}
-                      <CalendarDays className="text-subtle w-6 h-6" />
-                    </Button>
-                  </PopoverTrigger>
+                  <div className="space-y-1">
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        id="date"
+                        className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
+                        {exp.start_date.value
+                          ? new Date(exp.start_date.value).toLocaleDateString()
+                          : "Start date"}
+                        <CalendarDays className="text-subtle w-6 h-6" />
+                      </Button>
+                    </PopoverTrigger>
+                    {exp.start_date.error && (
+                      <InputError text={exp.start_date.error} />
+                    )}
+                  </div>
                   <PopoverContent
                     className="w-auto overflow-hidden p-0"
                     align="start">

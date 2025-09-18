@@ -15,6 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useFormActions } from "@/hooks/useFormAction";
 import { skillAndExperience } from "@/utils/initialForm";
+import StarMark from "../shared/StarMark";
+import InputError from "../shared/InputError";
 
 const SkillExperience = () => {
   const { formState, updateSkillExperience, addSkillExperience } =
@@ -112,7 +114,9 @@ const SkillExperience = () => {
             {/* Job title and Company Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
-                <Label htmlFor={`jobTitle-${exp.id}`}>Job Title</Label>
+                <Label htmlFor={`jobTitle-${exp.id}`}>
+                  Job Title <StarMark />
+                </Label>
                 <Input
                   id={`jobTitle-${exp.id}`}
                   value={exp.job_title.value || ""}
@@ -123,9 +127,14 @@ const SkillExperience = () => {
                   }
                   placeholder="Enter your job title"
                 />
+                {exp.job_title.error && (
+                  <InputError text={exp.job_title.error} />
+                )}
               </div>
               <div className="space-y-1">
-                <Label htmlFor={`companyName-${exp.id}`}>Company Name</Label>
+                <Label htmlFor={`companyName-${exp.id}`}>
+                  Company Name <StarMark />
+                </Label>
                 <Input
                   id={`companyName-${exp.id}`}
                   value={exp.company_name.value || ""}
@@ -139,29 +148,40 @@ const SkillExperience = () => {
                   }
                   placeholder="Enter your company name"
                 />
+                {exp.company_name.error && (
+                  <InputError text={exp.company_name.error} />
+                )}
               </div>
             </div>
 
             {/* Job Duration */}
             <div className="space-y-1">
-              <Label htmlFor={`job-duration-${exp.id}`}>Duration</Label>
+              <Label htmlFor={`job-duration-${exp.id}`}>
+                Duration <StarMark />
+              </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Popover
                   open={openStartDate === exp.id}
                   onOpenChange={(isOpen) =>
                     setOpenStartDate(isOpen ? exp.id : null)
                   }>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      id="date"
-                      className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
-                      {exp.start_date.value
-                        ? new Date(exp.start_date.value).toLocaleDateString()
-                        : "Start date"}
-                      <CalendarDays className="text-subtle w-6 h-6" />
-                    </Button>
-                  </PopoverTrigger>
+                  <div className="space-y-1">
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        id="date"
+                        className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
+                        {exp.start_date.value
+                          ? new Date(exp.start_date.value).toLocaleDateString()
+                          : "Start date"}
+                        <CalendarDays className="text-subtle w-6 h-6" />
+                      </Button>
+                    </PopoverTrigger>
+                    {exp.start_date.error && (
+                      <InputError text={exp.start_date.error} />
+                    )}
+                  </div>
+
                   <PopoverContent
                     className="w-auto overflow-hidden p-0"
                     align="start">

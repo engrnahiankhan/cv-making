@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/popover";
 import { CalendarDays, Plus } from "lucide-react";
 import { useFormActions } from "@/hooks/useFormAction";
+import StarMark from "@/components/shared/StarMark";
+import InputError from "@/components/shared/InputError";
 
 const Certifications = () => {
   const { formState, updateCertification, addCertification, updateToggle } =
@@ -47,7 +49,7 @@ const Certifications = () => {
             {/* Certification Title */}
             <div className="space-y-1">
               <Label htmlFor={`certification-title-${exp.id}`}>
-                Certification Title
+                Certification Title <StarMark />
               </Label>
               <Input
                 id={`certification-title-${exp.id}`}
@@ -62,13 +64,16 @@ const Certifications = () => {
                 }
                 placeholder="Enter your degree"
               />
+              {exp.certification_title.error && (
+                <InputError text={exp.certification_title.error} />
+              )}
             </div>
 
             {/* Issuing Organization */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
                 <Label htmlFor={`issuingOrganization-${exp.id}`}>
-                  Issuing Organization
+                  Issuing Organization <StarMark />
                 </Label>
                 <Input
                   id={`issuingOrganization-${exp.id}`}
@@ -83,13 +88,16 @@ const Certifications = () => {
                   }
                   placeholder="Enter your organization name"
                 />
+                {exp.issuing_organization.error && (
+                  <InputError text={exp.issuing_organization.error} />
+                )}
               </div>
             </div>
 
             {/* Certificate Issue */}
             <div className="space-y-1">
               <Label htmlFor={`certificate-issue-${exp.id}`}>
-                Certificate Issue
+                Certificate Issue <StarMark />
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Popover
@@ -108,6 +116,9 @@ const Certifications = () => {
                       <CalendarDays className="text-subtle w-6 h-6" />
                     </Button>
                   </PopoverTrigger>
+                  {exp.issue_date.error && (
+                    <InputError text={exp.issue_date.error} />
+                  )}
                   <PopoverContent
                     className="w-auto overflow-hidden p-0"
                     align="start">
