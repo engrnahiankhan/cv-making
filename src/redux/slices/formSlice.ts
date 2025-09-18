@@ -16,7 +16,6 @@ import {
   skillAndExperience,
 } from "@/utils/initialForm";
 
-// helper type: partial updates for nested CommonFieldType fields
 type PartialFieldUpdates<T> = {
   [K in keyof T]?: Partial<T[K]>;
 };
@@ -36,8 +35,6 @@ const initialState: FormState = {
   toggleEducationAndCertifications: "education",
 };
 
-/* ------------------ Type guards & validators ------------------ */
-
 function isCommonField(x: unknown): x is CommonFieldType<unknown> {
   return (
     typeof x === "object" &&
@@ -48,9 +45,7 @@ function isCommonField(x: unknown): x is CommonFieldType<unknown> {
   );
 }
 
-/** set error on a single field (special-cases on key names like email/phone/url/zip) */
 function validateField(field: CommonFieldType<unknown>, key?: string): void {
-  // if not required -> clear error
   if (!field.require) {
     field.error = "";
     return;
@@ -58,7 +53,6 @@ function validateField(field: CommonFieldType<unknown>, key?: string): void {
 
   const val = field.value;
 
-  // array case (skills etc)
   if (Array.isArray(val)) {
     field.error = val.length === 0 ? "This field is required" : "";
     return;
@@ -71,7 +65,6 @@ function validateField(field: CommonFieldType<unknown>, key?: string): void {
     return;
   }
 
-  // key specific checks
   if (key) {
     const k = key.toLowerCase();
 
@@ -103,7 +96,6 @@ function validateField(field: CommonFieldType<unknown>, key?: string): void {
       }
     }
 
-    // simple URL check for links / websites / portfolio / linkedin / social
     if (
       k.includes("linkedin") ||
       k.includes("portfolio") ||
@@ -124,11 +116,9 @@ function validateField(field: CommonFieldType<unknown>, key?: string): void {
   field.error = "";
 }
 
-/** Validate any object that may contain CommonFieldType properties (works with typed objects that also have other props like id) */
 function validateObject<T extends object>(obj: T): void {
   const rec = obj as Record<string, unknown>;
 
-  // validate each field that looks like CommonFieldType
   for (const key in rec) {
     const value = rec[key];
     if (isCommonField(value)) {
@@ -136,7 +126,6 @@ function validateObject<T extends object>(obj: T): void {
     }
   }
 
-  // cross-field checks (common: start_date/end_date)
   const start = rec["start_date"];
   const end = rec["end_date"];
   if (isCommonField(start) && isCommonField(end)) {
@@ -159,7 +148,6 @@ function validateObject<T extends object>(obj: T): void {
   }
 }
 
-/** Check all CommonFieldType fields inside an object are error-free */
 function allFieldsValid<T extends object>(obj: T): boolean {
   const rec = obj as Record<string, unknown>;
   for (const key in rec) {
@@ -379,10 +367,8 @@ const formSlice = createSlice({
 
     /* ---------- navigation ---------- */
     nextStepAction(state) {
-      // validate current step (will set errors on fields if any)
       const ok = validateStep(state.formData, state.currentStep);
       if (!ok) {
-        // don't advance; errors already set by validateStep
         return;
       }
       if (state.currentStep < MAX_STEP) {

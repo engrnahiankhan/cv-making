@@ -1,15 +1,17 @@
+import { CircleAlert } from "lucide-react";
+
 interface InputErrorPropsType {
   text: string;
 }
 
 const InputError = ({ text }: InputErrorPropsType) => {
   return (
-    <span
+    <p
       className="text-destructive text-sm sm:text-base flex items-center
-          space-x-2
+          
           ">
-      {text}
-    </span>
+      <CircleAlert className="h-4 w-4 mr-1" /> <span className="">{text}</span>
+    </p>
   );
 };
 

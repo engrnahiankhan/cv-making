@@ -49,7 +49,7 @@ const Certifications = () => {
             {/* Certification Title */}
             <div className="space-y-1">
               <Label htmlFor={`certification-title-${exp.id}`}>
-                Certification Title <StarMark />
+                Certification Title
               </Label>
               <Input
                 id={`certification-title-${exp.id}`}
@@ -73,7 +73,7 @@ const Certifications = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
                 <Label htmlFor={`issuingOrganization-${exp.id}`}>
-                  Issuing Organization <StarMark />
+                  Issuing Organization
                 </Label>
                 <Input
                   id={`issuingOrganization-${exp.id}`}
@@ -97,7 +97,7 @@ const Certifications = () => {
             {/* Certificate Issue */}
             <div className="space-y-1">
               <Label htmlFor={`certificate-issue-${exp.id}`}>
-                Certificate Issue <StarMark />
+                Certificate Issue
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Popover
@@ -105,20 +105,23 @@ const Certifications = () => {
                   onOpenChange={(open) =>
                     setOpenStartDates((prev) => ({ ...prev, [exp.id]: open }))
                   }>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      id="date"
-                      className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
-                      {exp.issue_date.value
-                        ? new Date(exp.issue_date.value).toLocaleDateString()
-                        : "Issue date"}
-                      <CalendarDays className="text-subtle w-6 h-6" />
-                    </Button>
-                  </PopoverTrigger>
-                  {exp.issue_date.error && (
-                    <InputError text={exp.issue_date.error} />
-                  )}
+                  <div className="space-y-1">
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        id="date"
+                        className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
+                        {exp.issue_date.value
+                          ? new Date(exp.issue_date.value).toLocaleDateString()
+                          : "Issue date"}
+                        <CalendarDays className="text-subtle w-6 h-6" />
+                      </Button>
+                    </PopoverTrigger>
+                    {exp.issue_date.error && (
+                      <InputError text={exp.issue_date.error} />
+                    )}
+                  </div>
+
                   <PopoverContent
                     className="w-auto overflow-hidden p-0"
                     align="start">

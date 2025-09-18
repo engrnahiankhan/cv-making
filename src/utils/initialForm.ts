@@ -56,9 +56,9 @@ export const education = () => {
 export const certification = () => {
   const data = {
     id: randomId(),
-    certification_title: { value: "", error: "", require: true },
-    issuing_organization: { value: "", error: "", require: true },
-    issue_date: { value: "", error: "", require: true },
+    certification_title: { value: "", error: "", require: false },
+    issuing_organization: { value: "", error: "", require: false },
+    issue_date: { value: "", error: "", require: false },
     expiration_date: { value: "", error: "", require: false },
   };
   return data;
@@ -66,8 +66,8 @@ export const certification = () => {
 
 export const contactInfo = () => {
   const data = {
-    linkedin_profile: { value: "", error: "", require: true },
-    portfolio_website: { value: "", error: "", require: true },
+    linkedin_profile: { value: "", error: "", require: false },
+    portfolio_website: { value: "", error: "", require: false },
     other_social_media: { value: "", error: "", require: false },
     other_social_media_links: { value: "", error: "", require: false },
   };
