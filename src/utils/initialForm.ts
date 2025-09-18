@@ -4,10 +4,10 @@ export const randomId = () => {
 
 export const personalInfo = () => {
   const data = {
-    first_name: { value: "", error: "", require: false },
-    last_name: { value: "", error: "", require: false },
-    phone_number: { value: "", error: "", require: false },
-    email: { value: "", error: "", require: false },
+    first_name: { value: "", error: "", require: true },
+    last_name: { value: "", error: "", require: true },
+    phone_number: { value: "", error: "", require: true },
+    email: { value: "", error: "", require: true },
     country: { value: "", error: "", require: false },
     address: { value: "", error: "", require: false },
     city: { value: "", error: "", require: false },
@@ -19,8 +19,8 @@ export const personalInfo = () => {
 
 export const careerSummary = () => {
   const data = {
-    job_title: { value: "", error: "", require: false },
-    job_description: { value: "", error: "", require: false },
+    job_title: { value: "", error: "", require: true },
+    job_description: { value: "", error: "", require: true },
   };
   return data;
 };
@@ -28,10 +28,10 @@ export const careerSummary = () => {
 export const skillAndExperience = () => {
   const data = {
     id: randomId(),
-    job_title: { value: "", error: "", require: false },
-    start_date: { value: "", error: "", require: false },
+    job_title: { value: "", error: "", require: true },
+    start_date: { value: "", error: "", require: true },
     end_date: { value: "", error: "", require: false },
-    company_name: { value: "", error: "", require: false },
+    company_name: { value: "", error: "", require: true },
     job_description: { value: "", error: "", require: false },
     achievements: { value: "", error: "", require: false },
     skill: { value: [], error: "", require: false },
@@ -42,10 +42,10 @@ export const skillAndExperience = () => {
 export const education = () => {
   const data = {
     id: randomId(),
-    degree: { value: "", error: "", require: false },
-    institution_name: { value: "", error: "", require: false },
+    degree: { value: "", error: "", require: true },
+    institution_name: { value: "", error: "", require: true },
     major: { value: "", error: "", require: false },
-    start_date: { value: "", error: "", require: false },
+    start_date: { value: "", error: "", require: true },
     end_date: { value: "", error: "", require: false },
     achievements: { value: "", error: "", require: false },
   };
@@ -56,9 +56,9 @@ export const education = () => {
 export const certification = () => {
   const data = {
     id: randomId(),
-    certification_title: { value: "", error: "", require: false },
-    issuing_organization: { value: "", error: "", require: false },
-    issue_date: { value: "", error: "", require: false },
+    certification_title: { value: "", error: "", require: true },
+    issuing_organization: { value: "", error: "", require: true },
+    issue_date: { value: "", error: "", require: true },
     expiration_date: { value: "", error: "", require: false },
   };
   return data;
@@ -66,8 +66,8 @@ export const certification = () => {
 
 export const contactInfo = () => {
   const data = {
-    linkedin_profile: { value: "", error: "", require: false },
-    portfolio_website: { value: "", error: "", require: false },
+    linkedin_profile: { value: "", error: "", require: true },
+    portfolio_website: { value: "", error: "", require: true },
     other_social_media: { value: "", error: "", require: false },
     other_social_media_links: { value: "", error: "", require: false },
   };
