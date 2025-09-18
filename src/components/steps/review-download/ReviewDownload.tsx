@@ -14,16 +14,15 @@ import {
   Award,
 } from "lucide-react";
 import { useFormActions } from "@/hooks/useFormAction";
-import Image from "next/image";
 
 const ReviewDownload = () => {
   const printRef = useRef<HTMLDivElement>(null);
 
   const { formState } = useFormActions();
 
-  const handlePrint = () => {
-    window.print();
-  };
+  // const handlePrint = () => {
+  //   window.print();
+  // };
 
   const personalInfo = formState.formData.personal_information;
   const contactInfo = formState.formData.contact_information;
@@ -54,14 +53,11 @@ const ReviewDownload = () => {
       {/* Print/Download Buttons */}
       <div className="max-w-4xl mx-auto mb-6 flex justify-end gap-3 px-4">
         <Button
-          onClick={handlePrint}
           variant="outline"
           className="shadow-sm hover:shadow-md transition-shadow">
           <Printer className="mr-2 w-4 h-4" /> Print CV
         </Button>
-        <Button
-          onClick={handlePrint}
-          className="shadow-sm hover:shadow-md transition-shadow bg-blue-600 hover:bg-blue-700">
+        <Button className="shadow-sm hover:shadow-md transition-shadow bg-blue-600 hover:bg-blue-700">
           <Download className="mr-2 w-4 h-4" /> Download PDF
         </Button>
       </div>
@@ -252,31 +248,6 @@ const ReviewDownload = () => {
                           {exp.job_description.value}
                         </p>
                       )}
-
-                      {exp.achievements.value && (
-                        <div className="bg-green-50 p-4 rounded-lg border border-green-200 mb-4">
-                          <h5 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
-                            <Award className="w-4 h-4" />
-                            Key Achievements
-                          </h5>
-                          <p className="text-green-700 text-sm">
-                            {exp.achievements.value}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Achievement Image */}
-                      {exp.achievements && exp.achievements.value && (
-                        <div className="mt-4">
-                          <Image
-                            width={1000}
-                            height={1000}
-                            src={exp.achievements.value}
-                            alt="Achievement"
-                            className="w-full max-w-md h-48 object-cover rounded-lg shadow-md border border-gray-200"
-                          />
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -309,12 +280,6 @@ const ReviewDownload = () => {
                           )}
                         </span>
                       </div>
-                      {edu.achievements.value && (
-                        <p className="text-gray-700 mt-2 text-sm">
-                          <strong>Achievements:</strong>{" "}
-                          {edu.achievements.value}
-                        </p>
-                      )}
                     </div>
                   ))}
                 </div>
