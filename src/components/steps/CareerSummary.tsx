@@ -1,6 +1,4 @@
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { Label } from "../ui/label";
-import { updateField } from "@/redux/slices/formSlice";
 import { Textarea } from "../ui/textarea";
 import {
   Select,
@@ -10,6 +8,9 @@ import {
   SelectValue,
 } from "../ui/select";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { useFormActions } from "@/hooks/useFormAction";
+import InputError from "../shared/InputError";
+import StarMark from "../shared/StarMark";
 
 const jobTitles = [
   "Software Engineer",
@@ -36,12 +37,9 @@ const jobTitles = [
 ];
 
 const CareerSummary = () => {
-  const dispatch = useAppDispatch();
-  const { data } = useAppSelector((state) => state.form);
+  const { formState, updateCareerSummary } = useFormActions();
+  const data = formState.formData.career_summary;
 
-  const handleChange = (field: keyof typeof data, value: string) => {
-    dispatch(updateField({ field, value }));
-  };
   return (
     <div className="space-y-8">
       <div className="space-y-2 sm:space-y-4">
@@ -57,10 +55,12 @@ const CareerSummary = () => {
 
       <div className="space-y-8">
         <div className="space-y-1">
-          <Label htmlFor="jobTitle">Job Title</Label>
+          <Label htmlFor="jobTitle">
+            Job Title <StarMark />
+          </Label>
           <Select
-            value={data.job_title || ""}
-            onValueChange={(value) => handleChange("job_title", value)}>
+            value={data.job_title.value || ""}
+            onValueChange={(value) => updateCareerSummary("job_title", value)}>
             <SelectTrigger className="!h-[64px] border-gray-300 focus:border-gray-400 focus:ring-0 w-full">
               <SelectValue placeholder="Enter your most recent job" />
             </SelectTrigger>
@@ -75,17 +75,25 @@ const CareerSummary = () => {
               </ScrollArea>
             </SelectContent>
           </Select>
+          {data.job_title.error && <InputError text={data.job_title.error} />}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="jobDesc">Job Description</Label>
+          <Label htmlFor="jobDesc">
+            Job Description <StarMark />
+          </Label>
 
           <Textarea
             id="jobDesc"
             placeholder="Describe your role and responsibilities"
-            value={data.job_description || ""}
-            onChange={(e) => handleChange("job_description", e.target.value)}
+            value={data.job_description.value || ""}
+            onChange={(e) =>
+              updateCareerSummary("job_description", e.target.value)
+            }
             className="h-[224px] resize-none"
           />
+          {data.job_description.error && (
+            <InputError text={data.job_description.error} />
+          )}
         </div>
       </div>
     </div>

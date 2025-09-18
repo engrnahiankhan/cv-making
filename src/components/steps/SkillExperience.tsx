@@ -4,14 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
-import {
-  addNewWorkExperience,
-  nextStep,
-  updateSkillExperienceForm,
-  updateWorkExperienceDate,
-} from "@/redux/slices/formSlice";
-import { SkillAndExperience } from "@/types/formTypes";
 import { useRef, useState } from "react";
 import {
   Popover,
@@ -21,10 +13,15 @@ import {
 import { CalendarDays, ChevronRight, CloudUpload, Plus, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { useFormActions } from "@/hooks/useFormAction";
+import { skillAndExperience } from "@/utils/initialForm";
+import StarMark from "../shared/StarMark";
+import InputError from "../shared/InputError";
 
 const SkillExperience = () => {
-  const dispatch = useAppDispatch();
-  const { data } = useAppSelector((state) => state.form);
+  const { formState, updateSkillExperience, addSkillExperience } =
+    useFormActions();
+  const data = formState.formData.skill_and_experience;
   const [openStartDate, setOpenStartDate] = useState<number | null>(null);
   const [openEndDate, setOpenEndDate] = useState<number | null>(null);
 
@@ -32,21 +29,26 @@ const SkillExperience = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleChange = (
-    id: number,
-    field: keyof SkillAndExperience,
-    value: string | string[]
-  ) => {
-    dispatch(updateSkillExperienceForm({ id, field, value }));
-  };
-
   const addSkill = (id: number, currentSkills: string[]) => {
     const skillInput = skillInputs[id]?.trim() || "";
-    if (skillInput && !currentSkills.includes(skillInput)) {
-      const updated = [...currentSkills, skillInput];
-      handleChange(id, "skill", updated);
-      setSkillInputs((prev) => ({ ...prev, [id]: "" }));
-    }
+    if (!skillInput) return;
+
+    const exp = formState.formData.skill_and_experience.find(
+      (exp) => exp.id === id
+    );
+    if (!exp) return;
+
+    const updated = [...currentSkills, skillInput];
+
+    updateSkillExperience(id, {
+      skill: {
+        value: updated,
+        error: exp.skill?.error || "",
+        require: exp.skill?.require || false,
+      },
+    });
+
+    setSkillInputs((prev) => ({ ...prev, [id]: "" }));
   };
 
   const removeSkill = (
@@ -54,8 +56,20 @@ const SkillExperience = () => {
     currentSkills: string[],
     skillToRemove: string
   ) => {
+    const exp = formState.formData.skill_and_experience.find(
+      (exp) => exp.id === id
+    );
+    if (!exp) return;
+
     const updated = currentSkills.filter((s) => s !== skillToRemove);
-    handleChange(id, "skill", updated);
+
+    updateSkillExperience(id, {
+      skill: {
+        value: updated,
+        error: exp.skill?.error || "",
+        require: exp.skill?.require || false,
+      },
+    });
   };
 
   const handleKeyPress = (
@@ -69,6 +83,10 @@ const SkillExperience = () => {
     }
   };
 
+  const handleSkip = () => {
+    skillAndExperience();
+  };
+
   return (
     <>
       <div className="space-y-8">
@@ -78,7 +96,7 @@ const SkillExperience = () => {
               Your Work Experience & Skills
             </h1>
             <button
-              onClick={() => dispatch(nextStep())}
+              onClick={handleSkip}
               className="bg-[#F5F5F5] sm:py-2 py-1.5 sm:px-5 px-3 gap-1 sm:gap-3 text-[#101010] font-medium text-base sm:text-xl rounded-[8px] flex items-center hover:bg-gray-200 cursor-pointer transition-colors">
               Skip <ChevronRight />
             </button>
@@ -91,73 +109,99 @@ const SkillExperience = () => {
           </p>
         </div>
 
-        {data.skill_and_experience?.map((exp) => (
+        {data?.map((exp) => (
           <div key={exp.id} className="space-y-8">
             {/* Job title and Company Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
-                <Label htmlFor={`jobTitle-${exp.id}`}>Job Title</Label>
+                <Label htmlFor={`jobTitle-${exp.id}`}>
+                  Job Title <StarMark />
+                </Label>
                 <Input
                   id={`jobTitle-${exp.id}`}
-                  value={exp.job_title || ""}
+                  value={exp.job_title.value || ""}
                   onChange={(e) =>
-                    handleChange(exp.id, "job_title", e.target.value)
+                    updateSkillExperience(exp.id, {
+                      job_title: { ...exp.job_title, value: e.target.value },
+                    })
                   }
                   placeholder="Enter your job title"
                 />
+                {exp.job_title.error && (
+                  <InputError text={exp.job_title.error} />
+                )}
               </div>
               <div className="space-y-1">
-                <Label htmlFor={`companyName-${exp.id}`}>Company Name</Label>
+                <Label htmlFor={`companyName-${exp.id}`}>
+                  Company Name <StarMark />
+                </Label>
                 <Input
                   id={`companyName-${exp.id}`}
-                  value={exp.company_name || ""}
+                  value={exp.company_name.value || ""}
                   onChange={(e) =>
-                    handleChange(exp.id, "company_name", e.target.value)
+                    updateSkillExperience(exp.id, {
+                      company_name: {
+                        ...exp.company_name,
+                        value: e.target.value,
+                      },
+                    })
                   }
                   placeholder="Enter your company name"
                 />
+                {exp.company_name.error && (
+                  <InputError text={exp.company_name.error} />
+                )}
               </div>
             </div>
 
             {/* Job Duration */}
             <div className="space-y-1">
-              <Label htmlFor={`job-duration-${exp.id}`}>Duration</Label>
+              <Label htmlFor={`job-duration-${exp.id}`}>
+                Duration <StarMark />
+              </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Popover
                   open={openStartDate === exp.id}
                   onOpenChange={(isOpen) =>
                     setOpenStartDate(isOpen ? exp.id : null)
                   }>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      id="date"
-                      className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
-                      {exp.start_date
-                        ? new Date(exp.start_date).toLocaleDateString()
-                        : "Start date"}
-                      <CalendarDays className="text-subtle w-6 h-6" />
-                    </Button>
-                  </PopoverTrigger>
+                  <div className="space-y-1">
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        id="date"
+                        className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
+                        {exp.start_date.value
+                          ? new Date(exp.start_date.value).toLocaleDateString()
+                          : "Start date"}
+                        <CalendarDays className="text-subtle w-6 h-6" />
+                      </Button>
+                    </PopoverTrigger>
+                    {exp.start_date.error && (
+                      <InputError text={exp.start_date.error} />
+                    )}
+                  </div>
+
                   <PopoverContent
                     className="w-auto overflow-hidden p-0"
                     align="start">
                     <Calendar
                       mode="single"
                       selected={
-                        exp.start_date ? new Date(exp.start_date) : undefined
+                        exp.start_date.value
+                          ? new Date(exp.start_date.value)
+                          : undefined
                       }
                       captionLayout="dropdown"
                       onSelect={(date) => {
                         setOpenEndDate(null);
                         if (date) {
-                          dispatch(
-                            updateWorkExperienceDate({
-                              id: exp.id,
-                              field: "start_date",
+                          updateSkillExperience(exp.id, {
+                            start_date: {
+                              ...exp.start_date,
                               value: date.toISOString(),
-                            })
-                          );
+                            },
+                          });
                         }
                       }}
                     />
@@ -174,8 +218,8 @@ const SkillExperience = () => {
                       variant="outline"
                       id="date"
                       className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
-                      {exp.end_date
-                        ? new Date(exp.end_date).toLocaleDateString()
+                      {exp.end_date.value
+                        ? new Date(exp.end_date.value).toLocaleDateString()
                         : "End date"}
                       <CalendarDays className="text-subtle w-6 h-6" />
                     </Button>
@@ -186,19 +230,20 @@ const SkillExperience = () => {
                     <Calendar
                       mode="single"
                       selected={
-                        exp.end_date ? new Date(exp.end_date) : undefined
+                        exp.end_date.value
+                          ? new Date(exp.end_date.value)
+                          : undefined
                       }
                       captionLayout="dropdown"
                       onSelect={(date) => {
                         setOpenEndDate(null);
                         if (date) {
-                          dispatch(
-                            updateWorkExperienceDate({
-                              id: exp.id,
-                              field: "end_date",
+                          updateSkillExperience(exp.id, {
+                            end_date: {
+                              ...exp.end_date,
                               value: date.toISOString(),
-                            })
-                          );
+                            },
+                          });
                         }
                       }}
                     />
@@ -214,9 +259,14 @@ const SkillExperience = () => {
               </Label>
               <Textarea
                 id={`jobDescription-${exp.id}`}
-                value={exp.job_description || ""}
+                value={exp.job_description.value || ""}
                 onChange={(e) =>
-                  handleChange(exp.id, "job_description", e.target.value)
+                  updateSkillExperience(exp.id, {
+                    job_description: {
+                      ...exp.job_description,
+                      value: e.target.value,
+                    },
+                  })
                 }
                 placeholder="Describe your key responsibilities and achievements"
                 className="h-[200px] resize-none"
@@ -233,8 +283,8 @@ const SkillExperience = () => {
                 <div className="border border-[#D4D4D4] rounded-[8px] p-8 text-center bg-[#FCFCFD] hover:bg-gray-100 transition-colors">
                   <CloudUpload className="w-8 h-8 text-[#333333] mx-auto mb-3" />
                   <p className="text-[#333333] font-normal text-lg mb-1">
-                    {exp.achievements
-                      ? exp.achievements
+                    {exp.achievements.value
+                      ? exp.achievements.value
                       : "Drop file or browse"}
                   </p>
                   <p className="text-base text-[#BABABA]">
@@ -254,7 +304,12 @@ const SkillExperience = () => {
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        handleChange(exp.id, "achievements", file.name);
+                        updateSkillExperience(exp.id, {
+                          achievements: {
+                            ...exp.achievements,
+                            value: file.name,
+                          },
+                        });
                       }
                     }}
                     className="hidden"
@@ -275,12 +330,14 @@ const SkillExperience = () => {
                           [exp.id]: e.target.value,
                         }))
                       }
-                      onKeyPress={(e) => handleKeyPress(e, exp.id, exp.skill)}
+                      onKeyPress={(e) =>
+                        handleKeyPress(e, exp.id, exp.skill.value)
+                      }
                       placeholder="Add a skill"
                       className="!h-10 !px-4 text-base"
                     />
                     <Button
-                      onClick={() => addSkill(exp.id, exp.skill)}
+                      onClick={() => addSkill(exp.id, exp.skill.value)}
                       size="icon"
                       className="px-3 !rounded-[6px">
                       <Plus className="w-4 h-4" />
@@ -288,14 +345,16 @@ const SkillExperience = () => {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {exp.skill?.map((skill, index) => (
+                    {exp.skill?.value.map((skill, index) => (
                       <Badge
                         key={index}
                         variant="secondary"
                         className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-3 py-1 text-sm capitalize">
                         {skill}
                         <button
-                          onClick={() => removeSkill(exp.id, exp.skill, skill)}
+                          onClick={() =>
+                            removeSkill(exp.id, exp.skill.value, skill)
+                          }
                           className="ml-2 hover:text-red-500">
                           <X className="w-3 h-3" />
                         </button>
@@ -313,7 +372,7 @@ const SkillExperience = () => {
 
       <button
         className="font-medium text-xl text-prime hover:text-green-600 transition-colors flex items-center gap-3 cursor-pointer duration-200 pt-6"
-        onClick={() => dispatch(addNewWorkExperience())}>
+        onClick={() => addSkillExperience()}>
         <Plus className="w-6 h-6" />
         Add Another Work Experience
       </button>

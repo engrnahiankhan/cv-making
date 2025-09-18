@@ -1,297 +1,414 @@
-import {
-  FormStructure,
-  SkillAndExperience,
-  Education,
-} from "@/types/formTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  CommonFieldType,
+  FormStructureType,
+  PersonalInfoType,
+  CareerSummaryType,
+  SkillAndExperienceType,
+  EducationType,
+  CertificationType,
+  ContactInformationType,
+} from "@/types/formTypes";
+import {
+  certification,
+  education,
+  initialFormData,
+  skillAndExperience,
+} from "@/utils/initialForm";
 
-interface FormState {
-  step: number;
-  data: Partial<FormStructure>;
-  toggleEducationAndCertifications: "education" | "certifications";
+type PartialFieldUpdates<T> = {
+  [K in keyof T]?: Partial<T[K]>;
+};
+
+// slice state
+export interface FormState {
+  currentStep: number;
+  formData: FormStructureType;
+  toggleEducationAndCertifications: "education" | "certificate";
 }
 
+const MAX_STEP = 7;
+
 const initialState: FormState = {
-  step: 1,
-  data: {},
+  currentStep: 1,
+  formData: initialFormData(),
   toggleEducationAndCertifications: "education",
 };
+
+function isCommonField(x: unknown): x is CommonFieldType<unknown> {
+  return (
+    typeof x === "object" &&
+    x !== null &&
+    "value" in (x as object) &&
+    "error" in (x as object) &&
+    "require" in (x as object)
+  );
+}
+
+function validateField(field: CommonFieldType<unknown>, key?: string): void {
+  if (!field.require) {
+    field.error = "";
+    return;
+  }
+
+  const val = field.value;
+
+  if (Array.isArray(val)) {
+    field.error = val.length === 0 ? "This field is required" : "";
+    return;
+  }
+
+  const str = typeof val === "string" ? val.trim() : String(val ?? "").trim();
+
+  if (!str) {
+    field.error = "This field is required";
+    return;
+  }
+
+  if (key) {
+    const k = key.toLowerCase();
+
+    // email
+    if (k.includes("email")) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!re.test(str)) {
+        field.error = "Please enter a valid email address";
+        return;
+      }
+    }
+
+    // phone
+    if (k.includes("phone")) {
+      // allow + and 7-15 digits
+      const phoneRe = /^\+?\d{7,15}$/;
+      if (!phoneRe.test(str)) {
+        field.error = "Please enter a valid phone number";
+        return;
+      }
+    }
+
+    // zip code
+    if (k.includes("zip")) {
+      const zipRe = /^\d{3,10}$/;
+      if (!zipRe.test(str)) {
+        field.error = "Please enter a valid ZIP/postal code";
+        return;
+      }
+    }
+
+    if (
+      k.includes("linkedin") ||
+      k.includes("portfolio") ||
+      k.includes("website") ||
+      k.includes("social") ||
+      k.includes("url")
+    ) {
+      try {
+        new URL(str);
+      } catch {
+        field.error = "Please enter a valid URL (include https://)";
+        return;
+      }
+    }
+  }
+
+  // default: OK
+  field.error = "";
+}
+
+function validateObject<T extends object>(obj: T): void {
+  const rec = obj as Record<string, unknown>;
+
+  for (const key in rec) {
+    const value = rec[key];
+    if (isCommonField(value)) {
+      validateField(value, key);
+    }
+  }
+
+  const start = rec["start_date"];
+  const end = rec["end_date"];
+  if (isCommonField(start) && isCommonField(end)) {
+    const s =
+      typeof start.value === "string"
+        ? start.value.trim()
+        : String(start.value ?? "").trim();
+    const e =
+      typeof end.value === "string"
+        ? end.value.trim()
+        : String(end.value ?? "").trim();
+    if (s && e) {
+      const sd = Date.parse(s);
+      const ed = Date.parse(e);
+      if (!Number.isNaN(sd) && !Number.isNaN(ed) && sd > ed) {
+        start.error = "Start date must be before end date";
+        end.error = "End date must be after start date";
+      }
+    }
+  }
+}
+
+function allFieldsValid<T extends object>(obj: T): boolean {
+  const rec = obj as Record<string, unknown>;
+  for (const key in rec) {
+    const v = rec[key];
+    if (isCommonField(v) && v.error !== "") return false;
+  }
+  return true;
+}
+
+/* ------------------ step validation ------------------ */
+
+function validateStep(formData: FormStructureType, step: number): boolean {
+  switch (step) {
+    case 1: {
+      validateObject(formData.personal_information);
+      return allFieldsValid(formData.personal_information);
+    }
+    case 2: {
+      validateObject(formData.career_summary);
+      return allFieldsValid(formData.career_summary);
+    }
+    case 3: {
+      // skill_and_experience is array of items (each item has id + fields)
+      for (const item of formData.skill_and_experience) {
+        validateObject(item);
+      }
+      return formData.skill_and_experience.every((item) => {
+        // check all CommonFieldType fields inside item
+        return allFieldsValid(item);
+      });
+    }
+    case 4: {
+      for (const item of formData.education) {
+        validateObject(item);
+      }
+      return formData.education.every((item) => allFieldsValid(item));
+    }
+    case 5: {
+      for (const item of formData.certifications) {
+        validateObject(item);
+      }
+      return formData.certifications.every((item) => allFieldsValid(item));
+    }
+    case 6: {
+      validateObject(formData.contact_information);
+      return allFieldsValid(formData.contact_information);
+    }
+    default:
+      return true;
+  }
+}
+
+/* ------------------ slice ------------------ */
 
 const formSlice = createSlice({
   name: "form",
   initialState,
   reducers: {
-    updateField: <K extends keyof FormStructure>(
-      state: FormState,
-      action: PayloadAction<{ field: K; value: FormStructure[K] }>
-    ) => {
-      state.data[action.payload.field] = action.payload.value;
+    /* ---------- InitializeFormData and State update action ---------- */
+    initializeFormData: (state) => {
+      state.formData = initialFormData();
     },
 
-    saveStepData: (state, action: PayloadAction<Partial<FormStructure>>) => {
-      state.data = { ...state.data, ...action.payload };
+    stateUpdateAction(state, action: PayloadAction<Partial<FormState>>) {
+      Object.assign(state, action.payload);
     },
 
-    nextStep: (state) => {
-      state.step += 1;
-    },
-
-    prevStep: (state) => {
-      if (state.step > 1) state.step -= 1;
-    },
-
-    resetForm: (state) => {
-      state.step = 1;
-      state.data = {};
-    },
-
-    initializeForm: (state) => {
-      state.data = {
-        id: Date.now() + Math.random(),
-        slug: "",
-        first_name: "",
-        last_name: "",
-        phone_number: "",
-        email: "",
-        country: "",
-        address: "",
-        city: "",
-        state: "",
-        zip_code: "",
-        job_title: "",
-        job_description: "",
-        skill_and_experience: [
-          {
-            id: Date.now() + Math.random(),
-            job_title: "",
-            start_date: "",
-            end_date: "",
-            company_name: "",
-            job_description: "",
-            achievements: "",
-            skill: [],
-          },
-        ],
-        education_and_certifications: {
-          education: [
-            {
-              id: Date.now() + Math.random(),
-              degree: "",
-              institution_name: "",
-              major: "",
-              start_date: "",
-              end_date: "",
-              achievements: "",
-            },
-          ],
-          certifications: [
-            {
-              id: Date.now() + Math.random(),
-              certification_title: "",
-              issuing_organization: "",
-              issue_date: "",
-              expiration_date: "",
-            },
-          ],
-        },
-        contact_information: {
-          linkedin_profile: "",
-          portfolio_website: "",
-          other_social_media: "",
-          other_social_media_links: "",
-        },
-      };
-    },
-
-    addNewWorkExperience: (state) => {
-      if (!state.data.skill_and_experience) {
-        state.data.skill_and_experience = [];
+    /* ---------- update top-level field groups (partial updates allowed) ---------- */
+    updatePersonalInfoAction(
+      state,
+      action: PayloadAction<PartialFieldUpdates<PersonalInfoType>>
+    ) {
+      const updates = action.payload;
+      for (const key in updates) {
+        const upd = updates[key as keyof PersonalInfoType];
+        if (!upd) continue;
+        const target =
+          state.formData.personal_information[key as keyof PersonalInfoType];
+        if (isCommonField(target)) {
+          // assign allowed partials (value / error / require)
+          Object.assign(target, upd as Partial<CommonFieldType<unknown>>);
+        }
       }
-
-      const newExperience: SkillAndExperience = {
-        id: Date.now() + Math.random(),
-        job_title: "",
-        start_date: "",
-        end_date: "",
-        company_name: "",
-        job_description: "",
-        achievements: "",
-        skill: [],
-      };
-
-      state.data.skill_and_experience.push(newExperience);
+      validateObject(state.formData.personal_information);
     },
 
-    addNewEducation: (state) => {
-      if (!state.data.education_and_certifications) {
-        state.data.education_and_certifications = {
-          education: [],
-          certifications: [],
-        };
+    updateCareerSummaryAction(
+      state,
+      action: PayloadAction<PartialFieldUpdates<CareerSummaryType>>
+    ) {
+      const updates = action.payload;
+      for (const key in updates) {
+        const upd = updates[key as keyof CareerSummaryType];
+        if (!upd) continue;
+        const target =
+          state.formData.career_summary[key as keyof CareerSummaryType];
+        if (isCommonField(target)) {
+          Object.assign(target, upd as Partial<CommonFieldType<unknown>>);
+        }
       }
-      state.data.education_and_certifications.education.push({
-        id: Date.now() + Math.random(),
-        degree: "",
-        institution_name: "",
-        major: "",
-        start_date: "",
-        end_date: "",
-        achievements: "",
-      });
+      validateObject(state.formData.career_summary);
     },
 
-    addNewCertificate: (state) => {
-      if (!state.data.education_and_certifications) {
-        state.data.education_and_certifications = {
-          education: [],
-          certifications: [],
-        };
+    updateContactInfoAction(
+      state,
+      action: PayloadAction<PartialFieldUpdates<ContactInformationType>>
+    ) {
+      const updates = action.payload;
+      for (const key in updates) {
+        const upd = updates[key as keyof ContactInformationType];
+        if (!upd) continue;
+        const target =
+          state.formData.contact_information[
+            key as keyof ContactInformationType
+          ];
+        if (isCommonField(target)) {
+          Object.assign(target, upd as Partial<CommonFieldType<unknown>>);
+        }
       }
-      state.data.education_and_certifications.certifications.push({
-        id: Date.now() + Math.random(),
-        certification_title: "",
-        issuing_organization: "",
-        issue_date: "",
-        expiration_date: "",
-      });
+      validateObject(state.formData.contact_information);
     },
 
-    updateEducationForm: (
+    /* ---------- update specific array item (skill/education/certification) ---------- */
+    updateSkillExperienceAction(
       state,
       action: PayloadAction<{
         id: number;
-        field: keyof Education;
-        value: string;
+        data: PartialFieldUpdates<SkillAndExperienceType>;
       }>
-    ) => {
-      const educationList = state.data.education_and_certifications?.education;
-      if (!educationList) return;
-
-      const edu = educationList.find((e) => e.id === action.payload.id);
-      if (edu) {
-        edu[action.payload.field] = action.payload.value as never;
-      }
-    },
-
-    updateCertificateForm: (
-      state,
-      action: PayloadAction<{
-        id: number;
-        field:
-          | "certification_title"
-          | "issuing_organization"
-          | "issue_date"
-          | "expiration_date";
-        value: string;
-      }>
-    ) => {
-      const certList = state.data.education_and_certifications?.certifications;
-      if (!certList) return;
-
-      const cert = certList.find((c) => c.id === action.payload.id);
-      if (cert) {
-        cert[action.payload.field] = action.payload.value;
-      }
-    },
-
-    updateSkillExperienceForm: (
-      state,
-      action: PayloadAction<{
-        id: number;
-        field: keyof SkillAndExperience;
-        value: string | string[];
-      }>
-    ) => {
-      const expList = state.data.skill_and_experience;
-      if (!expList) return;
-
-      const exp = expList.find((e) => e.id === action.payload.id);
-      if (exp) {
-        exp[action.payload.field] = action.payload.value as never;
-      }
-    },
-
-    updateContactInformation: (
-      state,
-      action: PayloadAction<{
-        field: keyof FormStructure["contact_information"];
-        value: string;
-      }>
-    ) => {
-      if (!state.data.contact_information) {
-        state.data.contact_information = {
-          linkedin_profile: "",
-          portfolio_website: "",
-          other_social_media: "",
-          other_social_media_links: "",
-        };
-      }
-
-      const { field, value } = action.payload;
-      state.data.contact_information[field] = value;
-    },
-
-    updateWorkExperienceDate: (
-      state,
-      action: PayloadAction<{
-        id: number;
-        field: "start_date" | "end_date";
-        value: string;
-      }>
-    ) => {
-      const { id, field, value } = action.payload;
-      if (!state.data.skill_and_experience) return;
-
-      const experience = state.data.skill_and_experience.find(
-        (exp) => exp.id === id
+    ) {
+      const { id, data } = action.payload;
+      const index = state.formData.skill_and_experience.findIndex(
+        (it) => it.id === id
       );
-      if (experience) {
-        experience[field] = value;
+      if (index === -1) return;
+      const item = state.formData.skill_and_experience[index];
+
+      for (const key in data) {
+        const upd = data[key as keyof SkillAndExperienceType];
+        if (!upd) continue;
+        const target = (item as Record<string, unknown>)[key];
+        if (isCommonField(target)) {
+          Object.assign(target, upd as Partial<CommonFieldType<unknown>>);
+        }
       }
+
+      validateObject(item);
     },
 
-    updateEducationDate: (
+    updateEducationAction(
       state,
       action: PayloadAction<{
         id: number;
-        field: "start_date" | "end_date";
-        value: string;
+        data: PartialFieldUpdates<EducationType>;
       }>
-    ) => {
-      const { id, field, value } = action.payload;
-      if (!state.data.education_and_certifications) return;
+    ) {
+      const { id, data } = action.payload;
+      const index = state.formData.education.findIndex((it) => it.id === id);
+      if (index === -1) return;
+      const item = state.formData.education[index];
 
-      const education = state.data.education_and_certifications.education.find(
-        (edu) => edu.id === id
+      for (const key in data) {
+        const upd = data[key as keyof EducationType];
+        if (!upd) continue;
+        const target = (item as Record<string, unknown>)[key];
+        if (isCommonField(target)) {
+          Object.assign(target, upd as Partial<CommonFieldType<unknown>>);
+        }
+      }
+
+      validateObject(item);
+    },
+
+    updateCertificationAction(
+      state,
+      action: PayloadAction<{
+        id: number;
+        data: PartialFieldUpdates<CertificationType>;
+      }>
+    ) {
+      const { id, data } = action.payload;
+      const index = state.formData.certifications.findIndex(
+        (it) => it.id === id
       );
-      if (education) {
-        education[field] = value;
+      if (index === -1) return;
+      const item = state.formData.certifications[index];
+
+      for (const key in data) {
+        const upd = data[key as keyof CertificationType];
+        if (!upd) continue;
+        const target = (item as Record<string, unknown>)[key];
+        if (isCommonField(target)) {
+          Object.assign(target, upd as Partial<CommonFieldType<unknown>>);
+        }
       }
+
+      validateObject(item);
     },
 
-    updateCertificationDate: (
-      state,
-      action: PayloadAction<{
-        id: number;
-        field: "issue_date" | "expiration_date";
-        value: string;
-      }>
-    ) => {
-      const { id, field, value } = action.payload;
-      if (!state.data.education_and_certifications) return;
-
-      const certification =
-        state.data.education_and_certifications.certifications.find(
-          (cert) => cert.id === id
+    /* ---------- delete items ---------- */
+    deleteSkillExperienceAction(state, action: PayloadAction<number>) {
+      state.formData.skill_and_experience =
+        state.formData.skill_and_experience.filter(
+          (i) => i.id !== action.payload
         );
-      if (certification) {
-        certification[field] = value;
+    },
+    deleteEducationAction(state, action: PayloadAction<number>) {
+      state.formData.education = state.formData.education.filter(
+        (i) => i.id !== action.payload
+      );
+    },
+    deleteCertificationAction(state, action: PayloadAction<number>) {
+      state.formData.certifications = state.formData.certifications.filter(
+        (i) => i.id !== action.payload
+      );
+    },
+
+    /* ---------- navigation ---------- */
+    nextStepAction(state) {
+      const ok = validateStep(state.formData, state.currentStep);
+      if (!ok) {
+        return;
+      }
+      if (state.currentStep < MAX_STEP) {
+        state.currentStep += 1;
       }
     },
 
-    toggleEducationAndCertificationsAction: (
+    prevStepAction(state) {
+      if (state.currentStep > 1) state.currentStep -= 1;
+    },
+
+    /* ---------- reset & slug ---------- */
+    resetFormDataAction(state) {
+      state.formData = initialFormData();
+      state.currentStep = 1;
+    },
+
+    updateSlugAction(state, action: PayloadAction<string>) {
+      console.log("check slug:", action.payload);
+
+      state.formData.slug = action.payload;
+    },
+
+    /* ---------- add new items helpers ---------- */
+    addSkillExperienceAction(state) {
+      state.formData.skill_and_experience.push(skillAndExperience());
+    },
+
+    addEducationAction(state) {
+      state.formData.education.push(education());
+    },
+
+    addCertificationAction(state) {
+      state.formData.certifications.push(certification());
+    },
+
+    /* ---------- Toggle Update Education and Certificate ---------- */
+    updateToggleAction: (
       state,
-      action: PayloadAction<"education" | "certifications">
+      action: PayloadAction<"education" | "certificate">
     ) => {
       state.toggleEducationAndCertifications = action.payload;
     },
@@ -299,23 +416,25 @@ const formSlice = createSlice({
 });
 
 export const {
-  updateField,
-  saveStepData,
-  nextStep,
-  prevStep,
-  resetForm,
-  initializeForm,
-  addNewWorkExperience,
-  addNewEducation,
-  addNewCertificate,
-  updateEducationForm,
-  updateCertificateForm,
-  updateSkillExperienceForm,
-  updateContactInformation,
-  updateWorkExperienceDate,
-  updateEducationDate,
-  updateCertificationDate,
-  toggleEducationAndCertificationsAction,
+  updatePersonalInfoAction,
+  updateCareerSummaryAction,
+  updateSkillExperienceAction,
+  updateEducationAction,
+  updateCertificationAction,
+  updateContactInfoAction,
+  deleteSkillExperienceAction,
+  deleteEducationAction,
+  deleteCertificationAction,
+  nextStepAction,
+  prevStepAction,
+  resetFormDataAction,
+  updateSlugAction,
+  addSkillExperienceAction,
+  addEducationAction,
+  addCertificationAction,
+  updateToggleAction,
+  initializeFormData,
+  stateUpdateAction,
 } = formSlice.actions;
 
 export default formSlice.reducer;

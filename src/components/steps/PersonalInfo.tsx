@@ -9,16 +9,13 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { updateField } from "@/redux/slices/formSlice";
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { useFormActions } from "@/hooks/useFormAction";
+import StarMark from "../shared/StarMark";
+import InputError from "../shared/InputError";
 
 const PersonalInfo = () => {
-  const dispatch = useAppDispatch();
-  const { data } = useAppSelector((state) => state.form);
-
-  const handleChange = (field: keyof typeof data, value: string) => {
-    dispatch(updateField({ field, value }));
-  };
+  const { formState, updatePersonalInfo } = useFormActions();
+  const data = formState.formData.personal_information;
 
   return (
     <div className="space-y-8">
@@ -36,45 +33,63 @@ const PersonalInfo = () => {
         {/* First Name and Last Name */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-1">
-            <Label htmlFor="firstName">First Name</Label>
+            <Label htmlFor="firstName">
+              First Name <StarMark />
+            </Label>
             <Input
               id="firstName"
-              value={data.first_name || ""}
-              onChange={(e) => handleChange("first_name", e.target.value)}
+              value={data.first_name.value || ""}
+              onChange={(e) => updatePersonalInfo("first_name", e.target.value)}
               placeholder="John"
             />
+            {data.first_name.error && (
+              <InputError text={data.first_name.error} />
+            )}
           </div>
           <div className="space-y-1">
-            <Label htmlFor="lastName">Last Name</Label>
+            <Label htmlFor="lastName">
+              Last Name <StarMark />
+            </Label>
             <Input
               id="lastName"
-              value={data.last_name || ""}
-              onChange={(e) => handleChange("last_name", e.target.value)}
+              value={data.last_name.value || ""}
+              onChange={(e) => updatePersonalInfo("last_name", e.target.value)}
               placeholder="Doe"
             />
+            {data.last_name.error && <InputError text={data.last_name.error} />}
           </div>
         </div>
 
         {/* Phone Number and Email Address */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-1">
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="phone">
+              Phone Number <StarMark />
+            </Label>
             <Input
               id="phone"
-              value={data.phone_number || ""}
-              onChange={(e) => handleChange("phone_number", e.target.value)}
+              value={data.phone_number.value || ""}
+              onChange={(e) =>
+                updatePersonalInfo("phone_number", e.target.value)
+              }
               placeholder="+0997808747"
             />
+            {data.phone_number.error && (
+              <InputError text={data.phone_number.error} />
+            )}
           </div>
           <div className="space-y-1">
-            <Label htmlFor="email">Email Address</Label>
+            <Label htmlFor="email">
+              Email Address <StarMark />
+            </Label>
             <Input
               id="email"
               type="email"
-              value={data.email || ""}
-              onChange={(e) => handleChange("email", e.target.value)}
+              value={data.email.value || ""}
+              onChange={(e) => updatePersonalInfo("email", e.target.value)}
               placeholder="johndoe@gmail.com"
             />
+            {data.email.error && <InputError text={data.email.error} />}
           </div>
         </div>
 
@@ -83,8 +98,8 @@ const PersonalInfo = () => {
           <div className="space-y-1 md:col-span-1">
             <Label htmlFor="country">Country/Region</Label>
             <Select
-              value={data.country || ""}
-              onValueChange={(value) => handleChange("country", value)}>
+              value={data.country.value || ""}
+              onValueChange={(value) => updatePersonalInfo("country", value)}>
               <SelectTrigger className="border-gray-300 focus:border-gray-400 focus:ring-0 w-full">
                 <SelectValue placeholder="Bangladesh" />
               </SelectTrigger>
@@ -101,8 +116,8 @@ const PersonalInfo = () => {
             <Label htmlFor="address">Address</Label>
             <Input
               id="address"
-              value={data.address || ""}
-              onChange={(e) => handleChange("address", e.target.value)}
+              value={data.address.value || ""}
+              onChange={(e) => updatePersonalInfo("address", e.target.value)}
               placeholder="Section-06, Mirpur, Dhaka."
             />
           </div>
@@ -114,8 +129,8 @@ const PersonalInfo = () => {
             <Label htmlFor="city">City</Label>
             <Input
               id="city"
-              value={data.city || ""}
-              onChange={(e) => handleChange("city", e.target.value)}
+              value={data.city.value || ""}
+              onChange={(e) => updatePersonalInfo("city", e.target.value)}
               placeholder="Dhaka"
             />
           </div>
@@ -123,8 +138,8 @@ const PersonalInfo = () => {
             <Label htmlFor="state">State</Label>
             <Input
               id="state"
-              value={data.state || ""}
-              onChange={(e) => handleChange("state", e.target.value)}
+              value={data.state.value || ""}
+              onChange={(e) => updatePersonalInfo("state", e.target.value)}
               placeholder="Dhaka"
             />
           </div>
@@ -132,8 +147,8 @@ const PersonalInfo = () => {
             <Label htmlFor="zipCode">ZIP Code</Label>
             <Input
               id="zipCode"
-              value={data.zip_code || ""}
-              onChange={(e) => handleChange("zip_code", e.target.value)}
+              value={data.zip_code.value || ""}
+              onChange={(e) => updatePersonalInfo("zip_code", e.target.value)}
               placeholder="1216"
             />
           </div>

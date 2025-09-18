@@ -1,65 +1,77 @@
-interface SkillAndExperience {
+// ================= COMMON FIELD =================
+export interface CommonFieldType<T = string> {
+  value: T;
+  error: string;
+  require: boolean;
+}
+
+// ================= PERSONAL INFO =================
+export interface PersonalInfoType {
+  first_name: CommonFieldType;
+  last_name: CommonFieldType;
+  phone_number: CommonFieldType;
+  email: CommonFieldType;
+  country: CommonFieldType;
+  address: CommonFieldType;
+  city: CommonFieldType;
+  state: CommonFieldType;
+  zip_code: CommonFieldType;
+}
+
+// ================= CAREER SUMMARY =================
+export interface CareerSummaryType {
+  job_title: CommonFieldType;
+  job_description: CommonFieldType;
+}
+
+// ================= SKILLS & EXPERIENCE =================
+export interface SkillAndExperienceType {
   id: number;
-  job_title: string;
-  company_name: string;
-  start_date: string;
-  end_date: string;
-  job_description: string;
-  achievements: string;
-  skill: string[];
+  job_title: CommonFieldType;
+  company_name: CommonFieldType;
+  start_date: CommonFieldType;
+  end_date: CommonFieldType;
+  job_description: CommonFieldType;
+  achievements: CommonFieldType;
+  skill: CommonFieldType<string[]>;
 }
 
-export interface Education {
+// ================= EDUCATION =================
+export interface EducationType {
   id: number;
-  degree: string;
-  institution_name: string;
-  major: string;
-  start_date: string;
-  end_date: string;
-  achievements: string;
+  degree: CommonFieldType;
+  institution_name: CommonFieldType;
+  major: CommonFieldType;
+  start_date: CommonFieldType;
+  end_date: CommonFieldType;
+  achievements: CommonFieldType;
 }
 
-export interface Certification {
+// ================= CERTIFICATION =================
+export interface CertificationType {
   id: number;
-  certification_title: string;
-  issuing_organization: string;
-  issue_date: string;
-  expiration_date: string;
+  certification_title: CommonFieldType;
+  issuing_organization: CommonFieldType;
+  issue_date: CommonFieldType;
+  expiration_date: CommonFieldType;
 }
 
-interface EducationAndCertifications {
-  education: Education[];
-  certifications: Certification[];
+// ================= CONTACT INFO =================
+export interface ContactInformationType {
+  linkedin_profile: CommonFieldType;
+  portfolio_website: CommonFieldType;
+  other_social_media: CommonFieldType;
+  other_social_media_links: CommonFieldType;
 }
 
-interface ContactInformation {
-  linkedin_profile: string;
-  portfolio_website: string;
-  other_social_media: string;
-  other_social_media_links: string;
-}
-
-interface FormStructure {
+// ================= FULL FORM =================
+export interface FormStructureType {
   id: number;
   slug: string;
-  first_name: string;
-  last_name: string;
-  phone_number: string;
-  email: string;
-  country: string;
-  address: string;
-  city: string;
-  state: string;
-  zip_code: string;
-  job_title: string;
-  job_description: string;
-  skill_and_experience: SkillAndExperience[];
-  education_and_certifications: EducationAndCertifications;
-  contact_information: ContactInformation;
+  personal_information: PersonalInfoType;
+  career_summary: CareerSummaryType;
+  skill_and_experience: SkillAndExperienceType[];
+  education: EducationType[];
+  certifications: CertificationType[];
+  contact_information: ContactInformationType;
 }
-export type {
-  FormStructure,
-  SkillAndExperience,
-  EducationAndCertifications,
-  ContactInformation,
-};

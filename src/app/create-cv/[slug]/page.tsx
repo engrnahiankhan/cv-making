@@ -3,15 +3,19 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import PersonalInfo from "@/components/steps/PersonalInfo";
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
-import { initializeForm, nextStep, resetForm } from "@/redux/slices/formSlice";
+import { updateSlugAction } from "@/redux/slices/formSlice";
 import CareerSummary from "@/components/steps/CareerSummary";
-import { ArrowRight } from "lucide-react";
-import { useEffect } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import SkillExperience from "@/components/steps/SkillExperience";
 import EduCertificate from "@/components/steps/edu-certificate/EduCertificate";
 import ContactInfo from "@/components/steps/ContactInfo";
 import AiStep from "@/components/steps/AiStep";
+import usePreserveData from "@/hooks/usePreserveData";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
+import ReviewDownload from "@/components/steps/review-download/ReviewDownload";
+import { useFormActions } from "@/hooks/useFormAction";
+import { useAppDispatch } from "@/hooks/reduxHooks";
 
 const steps = [
   { id: 1, number: "01", title: "Personal Information" },
@@ -24,17 +28,26 @@ const steps = [
 ];
 
 const MultiStepForm = () => {
+  usePreserveData("formState");
   const dispatch = useAppDispatch();
-  const { step, data } = useAppSelector((state) => state.form);
+  const params = useParams();
+  const slug = params.slug;
+
+  const { formState, nextStep, prevStep } = useFormActions();
+  const formData = formState.formData;
+  const currentStep = formState.currentStep;
 
   useEffect(() => {
-    dispatch(initializeForm());
-  }, [dispatch]);
+    if (slug) {
+      dispatch(updateSlugAction(String(slug)));
+    }
+  }, [slug, dispatch]);
 
   const handleSubmit = () => {
-    console.log("Submitted Data:", data);
-    alert("Check console for submitted data");
-    dispatch(resetForm());
+    console.log("Submitted Data:", formData);
+    nextStep();
+    // alert("Check console for submitted data");
+    // dispatch(resetFormDataAction());
   };
 
   return (
@@ -53,9 +66,9 @@ const MultiStepForm = () => {
               style={{
                 left: "24px",
                 width:
-                  step > 1
+                  currentStep > 1
                     ? `${
-                        ((step - 1) / (steps.length - 1)) *
+                        ((currentStep - 1) / (steps.length - 1)) *
                         (100 - 48 / steps.length)
                       }%`
                     : "0%",
@@ -64,8 +77,8 @@ const MultiStepForm = () => {
             {/* Step circles */}
             <div className="relative flex justify-between">
               {steps.map((s) => {
-                const isActive = step === s.id;
-                const isCompleted = step > s.id;
+                const isActive = currentStep === s.id;
+                const isCompleted = currentStep > s.id;
 
                 return (
                   <div key={s.id} className="flex flex-col items-center">
@@ -96,27 +109,42 @@ const MultiStepForm = () => {
         </div>
 
         <div className="px-5 sm:px-[60px] lg:px-[120px]">
-          {step === 1 && <PersonalInfo />}
-          {step === 2 && <CareerSummary />}
-          {step === 3 && <SkillExperience />}
-          {step === 4 && <EduCertificate />}
-          {step === 5 && <ContactInfo />}
-          {step === 6 && <AiStep />}
+          {currentStep === 1 && <PersonalInfo />}
+          {currentStep === 2 && <CareerSummary />}
+          {currentStep === 3 && <SkillExperience />}
+          {currentStep === 4 && <EduCertificate />}
+          {currentStep === 5 && <ContactInfo />}
+          {currentStep === 6 && <AiStep />}
+          {currentStep === 7 && <ReviewDownload />}
 
           <div className="pt-8 md:pt-12">
-            {step < 6 ? (
-              <Button
-                onClick={() => dispatch(nextStep())}
-                className="w-full h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] transition-colors">
-                Next
-                <ArrowRight className="w-6 h-6" />
-              </Button>
+            {currentStep < 6 ? (
+              <div className="flex items-center justify-between">
+                <Button
+                  size="res"
+                  onClick={() => prevStep()}
+                  disabled={currentStep === 1}>
+                  <ArrowLeft className="w-6 h-6" />
+                  Previous
+                </Button>
+                <Button size="res" onClick={() => nextStep()}>
+                  Next
+                  <ArrowRight className="w-6 h-6" />
+                </Button>
+              </div>
             ) : (
-              <button
-                onClick={handleSubmit}
-                className="w-full h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] cursor-pointer transition-colors">
-                Generate Resume
-              </button>
+              <div className="flex items-center justify-between">
+                <Button size="res" onClick={() => prevStep()}>
+                  <ArrowLeft className="w-6 h-6" />
+                  Previous
+                </Button>
+                <Button
+                  size="res"
+                  onClick={handleSubmit}
+                  className="w-[200px] h-[56px] bg-prime hover:bg-green-600 text-white font-medium text-base rounded-[6px] flex items-center justify-center gap-2 py-[11px] px-[24px] transition-colors">
+                  Generate Resume
+                </Button>
+              </div>
             )}
           </div>
         </div>

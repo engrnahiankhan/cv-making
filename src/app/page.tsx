@@ -1,22 +1,48 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { LoaderThree } from "@/components/ui/loader";
+import { loadFromLocalStorage } from "@/redux/actions/localStorageAction";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 function generateSlug() {
-  const timestamp = Date.now().toString(36); //
+  const timestamp = Date.now().toString(36);
   const randomStr = Math.random().toString(36).substring(2, 6);
-  return `xyz-${timestamp}-${randomStr}`;
+  return `user-${timestamp}-${randomStr}`;
 }
 
 export default function Home() {
   const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const localData = loadFromLocalStorage();
+    if (
+      localData?.formData &&
+      Object.keys(localData.formData).length > 0 &&
+      localData.formData.slug
+    ) {
+      router.push(`/create-cv/${localData.formData.slug}`);
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
   const handleStart = () => {
     const slug = generateSlug();
     router.push(`/create-cv/${slug}`);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen px-4 bg-white">
+        <LoaderThree />
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen px-4 bg-white">
       <div className="flex gap-6 flex-col-reverse lg:flex-row items-center justify-center max-w-7xl w-full">

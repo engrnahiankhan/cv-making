@@ -2,12 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
-import {
-  addNewCertificate,
-  toggleEducationAndCertificationsAction,
-  updateCertificateForm,
-} from "@/redux/slices/formSlice";
 import { useState } from "react";
 import {
   Popover,
@@ -15,36 +9,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CalendarDays, Plus } from "lucide-react";
+import { useFormActions } from "@/hooks/useFormAction";
+import StarMark from "@/components/shared/StarMark";
+import InputError from "@/components/shared/InputError";
 
 const Certifications = () => {
-  const dispatch = useAppDispatch();
-  const { data, toggleEducationAndCertifications } = useAppSelector(
-    (state) => state.form
-  );
+  const { formState, updateCertification, addCertification, updateToggle } =
+    useFormActions();
+  const data = formState.formData.certifications;
 
   const [openStartDates, setOpenStartDates] = useState<Record<number, boolean>>(
     {}
   );
   const [openEndDates, setOpenEndDates] = useState<Record<number, boolean>>({});
-
-  const handleChange = (
-    id: number,
-    field:
-      | "certification_title"
-      | "issuing_organization"
-      | "issue_date"
-      | "expiration_date",
-    value: string
-  ) => {
-    dispatch(updateCertificateForm({ id, field, value }));
-  };
-
-  const handleToggle = (value: "education" | "certifications") => {
-    dispatch(toggleEducationAndCertificationsAction(value));
-  };
-
-  // Only render if toggle is "certifications"
-  if (toggleEducationAndCertifications !== "certifications") return null;
 
   return (
     <>
@@ -55,7 +32,7 @@ const Certifications = () => {
               Your Certifications
             </h1>
             <button
-              onClick={() => handleToggle("education")}
+              onClick={() => updateToggle("education")}
               className="bg-main py-2 px-5 gap-3 text-white font-medium text-base rounded-[6px] flex items-center hover:bg-black cursor-pointer transition-colors">
               Education
             </button>
@@ -67,7 +44,7 @@ const Certifications = () => {
           </p>
         </div>
 
-        {data.education_and_certifications?.certifications?.map((exp) => (
+        {data.map((exp) => (
           <div key={exp.id} className="space-y-8">
             {/* Certification Title */}
             <div className="space-y-1">
@@ -76,12 +53,20 @@ const Certifications = () => {
               </Label>
               <Input
                 id={`certification-title-${exp.id}`}
-                value={exp.certification_title || ""}
+                value={exp.certification_title.value || ""}
                 onChange={(e) =>
-                  handleChange(exp.id, "certification_title", e.target.value)
+                  updateCertification(exp.id, {
+                    certification_title: {
+                      ...exp.certification_title,
+                      value: e.target.value,
+                    },
+                  })
                 }
                 placeholder="Enter your degree"
               />
+              {exp.certification_title.error && (
+                <InputError text={exp.certification_title.error} />
+              )}
             </div>
 
             {/* Issuing Organization */}
@@ -92,12 +77,20 @@ const Certifications = () => {
                 </Label>
                 <Input
                   id={`issuingOrganization-${exp.id}`}
-                  value={exp.issuing_organization || ""}
+                  value={exp.issuing_organization.value || ""}
                   onChange={(e) =>
-                    handleChange(exp.id, "issuing_organization", e.target.value)
+                    updateCertification(exp.id, {
+                      issuing_organization: {
+                        ...exp.issuing_organization,
+                        value: e.target.value,
+                      },
+                    })
                   }
                   placeholder="Enter your organization name"
                 />
+                {exp.issuing_organization.error && (
+                  <InputError text={exp.issuing_organization.error} />
+                )}
               </div>
             </div>
 
@@ -112,24 +105,32 @@ const Certifications = () => {
                   onOpenChange={(open) =>
                     setOpenStartDates((prev) => ({ ...prev, [exp.id]: open }))
                   }>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      id="date"
-                      className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
-                      {exp.issue_date
-                        ? new Date(exp.issue_date).toLocaleDateString()
-                        : "Issue date"}
-                      <CalendarDays className="text-subtle w-6 h-6" />
-                    </Button>
-                  </PopoverTrigger>
+                  <div className="space-y-1">
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        id="date"
+                        className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
+                        {exp.issue_date.value
+                          ? new Date(exp.issue_date.value).toLocaleDateString()
+                          : "Issue date"}
+                        <CalendarDays className="text-subtle w-6 h-6" />
+                      </Button>
+                    </PopoverTrigger>
+                    {exp.issue_date.error && (
+                      <InputError text={exp.issue_date.error} />
+                    )}
+                  </div>
+
                   <PopoverContent
                     className="w-auto overflow-hidden p-0"
                     align="start">
                     <Calendar
                       mode="single"
                       selected={
-                        exp.issue_date ? new Date(exp.issue_date) : undefined
+                        exp.issue_date.value
+                          ? new Date(exp.issue_date.value)
+                          : undefined
                       }
                       captionLayout="dropdown"
                       onSelect={(date) => {
@@ -138,11 +139,12 @@ const Certifications = () => {
                           [exp.id]: false,
                         }));
                         if (date)
-                          handleChange(
-                            exp.id,
-                            "issue_date",
-                            date.toISOString()
-                          );
+                          updateCertification(exp.id, {
+                            issue_date: {
+                              ...exp.issue_date,
+                              value: date.toISOString(),
+                            },
+                          });
                       }}
                     />
                   </PopoverContent>
@@ -158,8 +160,10 @@ const Certifications = () => {
                       variant="outline"
                       id="date"
                       className="w-full bg-[#FCFCFD] h-[48px] sm:h-[68px] !px-4 !sm:px-6 justify-between font-normal text-base leading-[160%] font-[#333333]">
-                      {exp.expiration_date
-                        ? new Date(exp.expiration_date).toLocaleDateString()
+                      {exp.expiration_date.value
+                        ? new Date(
+                            exp.expiration_date.value
+                          ).toLocaleDateString()
                         : "Expiry Date (if applicable)"}
                       <CalendarDays className="text-subtle w-6 h-6" />
                     </Button>
@@ -170,8 +174,8 @@ const Certifications = () => {
                     <Calendar
                       mode="single"
                       selected={
-                        exp.expiration_date
-                          ? new Date(exp.expiration_date)
+                        exp.expiration_date.value
+                          ? new Date(exp.expiration_date.value)
                           : undefined
                       }
                       captionLayout="dropdown"
@@ -181,11 +185,12 @@ const Certifications = () => {
                           [exp.id]: false,
                         }));
                         if (date)
-                          handleChange(
-                            exp.id,
-                            "expiration_date",
-                            date.toISOString()
-                          );
+                          updateCertification(exp.id, {
+                            expiration_date: {
+                              ...exp.expiration_date,
+                              value: date.toISOString(),
+                            },
+                          });
                       }}
                     />
                   </PopoverContent>
@@ -200,7 +205,7 @@ const Certifications = () => {
 
       <button
         className="font-medium text-xl text-prime hover:text-green-600 transition-colors flex items-center gap-3 cursor-pointer duration-200 pt-6"
-        onClick={() => dispatch(addNewCertificate())}>
+        onClick={() => addCertification()}>
         <Plus className="w-6 h-6" />
         Add Another Certification
       </button>
